@@ -15,30 +15,52 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    // ARRAYS DE NODOS Y ARISTA ( SUJETO A CAMBIO )
+
     ArrayList<Nodo> nodes = new ArrayList<Nodo>();
     ArrayList<Arista> edges = new ArrayList<Arista>();
     ArrayList<Arista> edgesD = new ArrayList<Arista>();
 
+
+    // LAYOUTS Y VIEW CREADOS
+
     LinearLayout parent;
     TextView dialogo;
-    int [][] mat;
+    View MyView;
+    Dialog dialog;
 
-    public Button bt1,bt2,bt3,bt4,bt5,bt6,bt7;
-    public boolean nodo = false, arista = false,dirigido = false;
 
+    // VARIABLES GLOBALES ( NO SE SI ESTO ESTA BIEN :V )
+
+    // Matriz de adyacencia
+    int [][] matrix;
+
+    // Creacion de botones
+    public Button bt1,bt2,bt3,bt4,bt5,bt6,bt7,bt8,bt9;
+
+    // Boleanos para saber si un boton esa siendo usado o no
+    public boolean  nodo,
+                    arista,
+                    crear,
+                    seleccionar,
+                    dirigido;
+
+
+    // PROCESOS DE INICIALIZACION DEL PROYECTO
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //  AGREGAMOS EL CUSTOM VIEW AL LINEARLAYOUT CREADO EN EL XML
         parent = (LinearLayout)findViewById(R.id.parent);
-        View MyView = new MyView(this);
+        MyView = new MyView(this);
         parent.addView(MyView);
 
         // Creacion de botones
@@ -49,7 +71,23 @@ public class MainActivity extends AppCompatActivity {
         bt5=(Button)findViewById(R.id.bt5);
         bt6=(Button)findViewById(R.id.bt6);
         bt7=(Button)findViewById(R.id.bt7);
+        bt8=(Button)findViewById(R.id.bt8);
+        bt9=(Button)findViewById(R.id.bt9);
+
+        nodo = true;
+        arista = false;
+        crear = true;
+        seleccionar = false;
+        dirigido = false;
+
+        dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog);
+
+        dialogo = (TextView) dialog.findViewById(R.id.dialog);
     }
+
+    // <---  FUNCIONES DE LOS BOTONES  --->
 
     public void buttonNode(View view) {
         if(!nodo) {
@@ -83,27 +121,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonMatrix(View view){
-
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        dialog.setContentView(R.layout.custom_dialog);
-        dialogo = (TextView) dialog.findViewById(R.id.dialog);
-        mat = new int [nodes.size()+1][nodes.size()+1];
+        matrix = new int [nodes.size()+1][nodes.size()+1];
         String aux="Matriz Adyacente\n";
 
         for(int g=0;g < nodes.size();g++) {
             for(int h=0;h < nodes.size();h++) {
                 for(int k=0;k < edges.size();k++) {
                     if(g == edges.get(k).getUno().getId()-1 && h == edges.get(k).getDos().getId()-1){
-                        mat[g][h]= 1;
-                        mat[h][g]= 1;
+                        matrix[g][h]= 1;
+                        matrix[h][g]= 1;
                     }
                 }
 
                 for(int k=0;k < edgesD.size();k++) {
                     if(g == edgesD.get(k).getUno().getId()-1 && h == edgesD.get(k).getDos().getId()-1){
-                        mat[h][g]= 1;
+                        matrix[h][g]= 1;
                     }
                 }
             }
@@ -120,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             aux = aux+"\n\n\t\t";
             for(int j=0;j<nodes.size();j++)
             {
-                aux = aux + mat[i][j] +"\t\t";
+                aux = aux + matrix[i][j] +"\t\t";
             }
             aux = aux +" = "+nodes.get(i).getId();
         }
@@ -139,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i < nodes.size();i++) {
             s=0;
             for(int j=0;j < nodes.size();j++) {
-                if(mat[i][j]>0) {
+                if(matrix[i][j]>0) {
                     s++;
                 }
             }
@@ -153,13 +185,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonDirigido(View view){
+        edges.clear();
         dirigido = true;
-        Log.d("dirigido",""+dirigido);
+        MyView.invalidate();
     }
 
     public void buttonNoDirigido(View view){
+        edgesD.clear();
         dirigido = false;
-        Log.d("dirigido",""+dirigido);
+        MyView.invalidate();
+    }
+
+    public void buttonCreate(View view){
+
+    }
+
+    public void buttonSelect(View view){
+
     }
 
     public void changeColor(){
@@ -172,21 +214,18 @@ public class MainActivity extends AppCompatActivity {
         if(nodo){
             bt1.setTextColor(Color.RED);
             bt2.setTextColor(Color.BLACK);
-            if(bt6.getVisibility() == View.VISIBLE){
-                bt6.setVisibility(View.INVISIBLE);
-                bt7.setVisibility(View.INVISIBLE);
-            }
         }
         if(arista){
             bt2.setTextColor(Color.RED);
             bt1.setTextColor(Color.BLACK);
-            if(bt6.getVisibility() == View.INVISIBLE){
-                bt6.setVisibility(View.VISIBLE);
-                bt7.setVisibility(View.VISIBLE);
-            }
+
         }
     }
 
+    // <---  END BOTONES  --->
+
+
+    // <---  CUSTOM VIEW  --->
 
     class MyView extends View {
 
@@ -230,8 +269,8 @@ public class MainActivity extends AppCompatActivity {
 
             for(int i = 0; i<edgesD.size();i++){
                 paint.setColor(Color.BLACK);
-                canvas.drawLine(edgesD.get(i).getX1(),edgesD.get(i).getY1(),(((((edgesD.get(i).getX2()-edgesD.get(i).getX1())/10)+edgesD.get(i).getX1())-edgesD.get(i).getX1())*7)+edgesD.get(i).getX1(),(((((edgesD.get(i).getY2()-edgesD.get(i).getY1())/10)+edgesD.get(i).getY1())-edgesD.get(i).getY1())*7)+edgesD.get(i).getY1(),paint);
-                canvas.drawCircle((((((edgesD.get(i).getX2()-edgesD.get(i).getX1())/10)+edgesD.get(i).getX1())-edgesD.get(i).getX1())*7)+edgesD.get(i).getX1(),(((((edgesD.get(i).getY2()-edgesD.get(i).getY1())/10)+edgesD.get(i).getY1())-edgesD.get(i).getY1())*7)+edgesD.get(i).getY1(),20,paint);
+                canvas.drawLine(edgesD.get(i).getX1(),edgesD.get(i).getY1(),edgesD.get(i).getX2(),edgesD.get(i).getY2(),paint);
+                canvas.drawCircle((edgesD.get(i).getX2()+edgesD.get(i).getX1())/2,(edgesD.get(i).getY2()+edgesD.get(i).getY1())/2,20,paint);
                 paint.setColor(Color.LTGRAY);
             }
 
@@ -251,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
             _y = e.getY();
             switch (e.getAction()){
                 case MotionEvent.ACTION_DOWN:
-                    if(nodo){ createNode(_x,_y); invalidate(); }
+                    if(nodo && crear){ createNode(_x,_y); invalidate(); }
                     else if(arista){
                         for(int i = 0; i < nodes.size();i++) {
                             double cenx = _x - nodes.get(i).getX();
@@ -271,14 +310,19 @@ public class MainActivity extends AppCompatActivity {
                                     _x2 = nodes.get(i).getX();
                                     _y2 = nodes.get(i).getY();
                                     createAristaND(_x1,_x2,_y1,_y2);
-
-
                                 }
                             }
                         }
-                        invalidate();
+
                     }
                     break;
+
+                case MotionEvent.ACTION_MOVE:
+
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    invalidate();
                 default:
                     break;
             }
@@ -313,5 +357,8 @@ public class MainActivity extends AppCompatActivity {
                 edgesD.add(a);
             }
         }
+
     }
+
+    // <---  END VIEW  --->
 }

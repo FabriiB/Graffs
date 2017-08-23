@@ -11,13 +11,11 @@ public class Nodo {
     private boolean selected = false;
     private int start,feed; // Entrada para el primer recorrido, y para el feedback el segundo valor
 
-    public Nodo(float x, float y, int id,String color,int start,int feed) {
+    public Nodo(float x, float y, int id,String color) {
         this.x = x;
         this.y = y;
         this.id = id;
         this.color = color;
-        this.start=start;
-        this.feed=feed;
     }
 
     public int getStart() {
