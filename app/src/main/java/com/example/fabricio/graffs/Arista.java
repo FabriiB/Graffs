@@ -21,7 +21,7 @@ public class Arista {
         this.dir = dir;
         this.uno = uno;
         this.dos = dos;
-        this.holgura=holgura;
+        this.holgura=holgura; //Atributos added
         this.peso=peso;
     }
     public int getHolgura() {
