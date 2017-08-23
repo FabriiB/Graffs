@@ -9,12 +9,31 @@ public class Nodo {
     private int id;
     private String color;
     private boolean selected = false;
+    private int start,feed;
 
-    public Nodo(float x, float y, int id,String color) {
+    public Nodo(float x, float y, int id,String color,int start,int feed) {
         this.x = x;
         this.y = y;
         this.id = id;
         this.color = color;
+        this.start=start;
+        this.feed=feed;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getFeed() {
+        return feed;
+    }
+
+    public void setFeed(int feed) {
+        this.feed = feed;
     }
 
     public int getId() {
