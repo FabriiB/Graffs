@@ -22,6 +22,19 @@ public class Arista {
         this.uno = uno;
         this.dos = dos;
     }
+    public double pendiente()
+    {
+        double m=0;
+        if(x1>x2 && y1>y2)
+        {
+            m=(x1-x2)/(y1-y2);
+        }
+        else if(x2>x1 && y2>y1)
+        {
+            m=(x2-x1)/(y2-y1);
+        }
+        return m;
+    }
     public int getHolgura() {
         return holgura;
     }
