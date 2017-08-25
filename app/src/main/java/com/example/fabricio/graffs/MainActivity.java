@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import android.graphics.Path;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -283,8 +285,10 @@ public class MainActivity extends AppCompatActivity {
         public void onDraw(Canvas canvas) {
             int radio = 80;
 
+
             super.onDraw(canvas);
             canvas.drawPaint(paint);
+
 
             for(int i = 0; i<edges.size();i++){
                 paint.setColor(Color.BLACK);
@@ -293,9 +297,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             for(int i = 0; i<edgesD.size();i++){
+                double angulo = angule(edgesD.get(i).getX1(),edgesD.get(i).getY1(),edgesD.get(i).getX2(),edgesD.get(i).getY2());
                 paint.setColor(Color.BLACK);
                 canvas.drawLine(edgesD.get(i).getX1(),edgesD.get(i).getY1(),edgesD.get(i).getX2(),edgesD.get(i).getY2(),paint);
-                canvas.drawCircle((edgesD.get(i).getX2()+edgesD.get(i).getX1())/2,(edgesD.get(i).getY2()+edgesD.get(i).getY1())/2,20,paint);
+                drawTriangle(canvas,paint,(edgesD.get(i).getX2()+edgesD.get(i).getX1())/2,(edgesD.get(i).getY2()+edgesD.get(i).getY1())/2,angulo);
                 paint.setColor(Color.WHITE);
             }
 
@@ -429,6 +434,30 @@ public class MainActivity extends AppCompatActivity {
                 nodes.get(i).setSelected(false);
                 nodes.get(i).setColor("#E53935");
             }
+        }
+
+        public void drawTriangle(Canvas canvas, Paint paint, float x, float y, double angulo) {
+
+            paint.setColor(Color.BLACK);
+            int halfWidth = 80 / 2;
+            Path path = new Path();
+            path.moveTo(x, y - halfWidth); // Top
+            path.lineTo(x - halfWidth, y + halfWidth); // Bottom left
+            path.lineTo(x + halfWidth, y + halfWidth); // Bottom right
+            path.lineTo(x, y - halfWidth); // Back to Top
+            path.close();
+
+            canvas.save();
+            canvas.rotate((float)angulo,x,y);
+
+            canvas.drawPath(path, paint);
+            canvas.restore();
+        }
+
+        public double angule(float x1, float y1, float x2, float y2){
+            double angule = 0;
+            // ayudaaaaaaaaaaa!!!!!!!!!!
+            return angule;
         }
 
     }
