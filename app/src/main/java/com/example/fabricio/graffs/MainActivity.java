@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     // Matriz de adyacencia
     int [][] matrix;
 
+    int selected;
+
     // Creacion de botones
     public Button bt1,bt2,bt3,bt4,bt5,bt6,bt7,bt8,bt9;
 
@@ -48,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
                     arista,
                     crear,
                     seleccionar,
-                    dirigido;
+                    dirigido,
+                    ndirigido;
 
 
     // PROCESOS DE INICIALIZACION DEL PROYECTO
@@ -79,12 +82,24 @@ public class MainActivity extends AppCompatActivity {
         crear = true;
         seleccionar = false;
         dirigido = false;
+        ndirigido = true;
+
+        selected = 0;
 
         dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
         dialog.setContentView(R.layout.custom_dialog);
-
         dialogo = (TextView) dialog.findViewById(R.id.dialog);
+
+
+        bt1.setTextColor(Color.DKGRAY);
+        bt2.setTextColor(Color.WHITE);
+        bt7.setVisibility(View.VISIBLE);
+        bt6.setVisibility(View.VISIBLE);
+        if(bt8.getVisibility() == View.VISIBLE){
+            bt8.setVisibility(View.INVISIBLE);
+            bt9.setVisibility(View.INVISIBLE);
+        }
     }
 
     // <---  FUNCIONES DE LOS BOTONES  --->
@@ -162,10 +177,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonRange(View view){
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        dialog.setContentView(R.layout.custom_dialog);
         dialogo = (TextView) dialog.findViewById(R.id.dialog);
         int s=0,rango=0;
         for(int i=0;i < nodes.size();i++) {
@@ -181,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
         dialogo.setTextSize(50);
         dialogo.setText(""+rango);
         dialog.show();
-
     }
 
     public void buttonDirigido(View view){
@@ -197,27 +207,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonCreate(View view){
+        crear = true;
+        seleccionar = false;
 
     }
 
     public void buttonSelect(View view){
-
+        crear = false;
+        seleccionar = true;
     }
 
     public void changeColor(){
         if(!nodo){
-            bt1.setTextColor(Color.BLACK);
+            bt1.setTextColor(Color.WHITE);
         }
         if(!arista){
-            bt2.setTextColor(Color.BLACK);
+            bt2.setTextColor(Color.WHITE);
         }
         if(nodo){
-            bt1.setTextColor(Color.RED);
-            bt2.setTextColor(Color.BLACK);
+            bt1.setTextColor(Color.DKGRAY);
+            bt2.setTextColor(Color.WHITE);
+            bt7.setVisibility(View.VISIBLE);
+            bt6.setVisibility(View.VISIBLE);
+            if(bt8.getVisibility() == View.VISIBLE){
+                bt8.setVisibility(View.INVISIBLE);
+                bt9.setVisibility(View.INVISIBLE);
+            }
         }
         if(arista){
-            bt2.setTextColor(Color.RED);
-            bt1.setTextColor(Color.BLACK);
+            bt2.setTextColor(Color.DKGRAY);
+            bt1.setTextColor(Color.WHITE);
+            bt8.setVisibility(View.VISIBLE);
+            bt9.setVisibility(View.VISIBLE);
+            if(bt6.getVisibility() == View.VISIBLE){
+                bt6.setVisibility(View.INVISIBLE);
+                bt7.setVisibility(View.INVISIBLE);
+            }
 
         }
     }
@@ -248,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
             paint = new Paint();
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.LTGRAY);
+            paint.setColor(Color.WHITE);
             paint.setTextSize(60);
             paint.setStrokeWidth(20);
 
@@ -264,14 +289,14 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i<edges.size();i++){
                 paint.setColor(Color.BLACK);
                 canvas.drawLine(edges.get(i).getX1(),edges.get(i).getY1(),edges.get(i).getX2(),edges.get(i).getY2(),paint);
-                paint.setColor(Color.LTGRAY);
+                paint.setColor(Color.WHITE);
             }
 
             for(int i = 0; i<edgesD.size();i++){
                 paint.setColor(Color.BLACK);
                 canvas.drawLine(edgesD.get(i).getX1(),edgesD.get(i).getY1(),edgesD.get(i).getX2(),edgesD.get(i).getY2(),paint);
                 canvas.drawCircle((edgesD.get(i).getX2()+edgesD.get(i).getX1())/2,(edgesD.get(i).getY2()+edgesD.get(i).getY1())/2,20,paint);
-                paint.setColor(Color.LTGRAY);
+                paint.setColor(Color.WHITE);
             }
 
 
@@ -280,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                 canvas.drawCircle(nodes.get(i).getX(),nodes.get(i).getY(),radio,paint);
                 paint.setColor(Color.WHITE);
                 canvas.drawText(String.valueOf(nodes.get(i).getId()),nodes.get(i).getX()-15,nodes.get(i).getY()+15,paint);
-                paint.setColor(Color.LTGRAY);
+                paint.setColor(Color.WHITE);
             }
         }
 
@@ -291,34 +316,76 @@ public class MainActivity extends AppCompatActivity {
             switch (e.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     if(nodo && crear){ createNode(_x,_y); invalidate(); }
-                    else if(arista){
+                    else if(arista && ndirigido){
                         for(int i = 0; i < nodes.size();i++) {
                             double cenx = _x - nodes.get(i).getX();
                             double ceny = _y - nodes.get(i).getY();
-
-                            nodes.get(i).setSelected(!nodes.get(i).getSelected());
-
                             float distancia = (float) Math.sqrt(cenx * cenx + ceny * ceny);
-
+                            circulo = i;
                             if (distancia <= 100) {
-                                circulo = i;
-                                if (nodes.get(i).getSelected()) {
-                                    _x1 = nodes.get(i).getX();
-                                    _y1 = nodes.get(i).getY();
-
-                                } else if(!nodes.get(i).getSelected()){
-                                    _x2 = nodes.get(i).getX();
-                                    _y2 = nodes.get(i).getY();
-                                    createAristaND(_x1,_x2,_y1,_y2);
+                                if(selected == 0){
+                                    if(nodes.get(i).getSelected()== false){
+                                        selected++;
+                                        nodes.get(i).setSelected(true);
+                                        nodes.get(i).setColor("#0277BD");
+                                        _x1 = nodes.get(i).getX();
+                                        _y1 = nodes.get(i).getY();
+                                    }else{
+                                        selected--;
+                                        nodes.get(i).setSelected(false);
+                                        nodes.get(i).setColor("#E53935");
+                                    }
+                                }else if(selected == 1){
+                                    if(nodes.get(i).getSelected()== false){
+                                        selected++;
+                                        nodes.get(i).setSelected(true);
+                                        _x2 = nodes.get(i).getX();
+                                        _y2 = nodes.get(i).getY();
+                                        createAristaND(_x1,_x2,_y1,_y2);
+                                    }
                                 }
                             }
                         }
-
                     }
                     break;
 
                 case MotionEvent.ACTION_MOVE:
+                    if(nodo && seleccionar){
+                    for(int i = 0; i < nodes.size();i++) {
+                        double cenx = _x - nodes.get(i).getX();
+                        double ceny = _y - nodes.get(i).getY();
+                        float distancia = (float) Math.sqrt(cenx * cenx + ceny * ceny);
+                        if (distancia <= 100) {
+                            circulo = i;
+                            nodes.get(i).setX(_x);
+                            nodes.get(i).setY(_y);
+                            if(!edges.isEmpty()){
+                                for(int j = 0;j<edges.size();j++){
+                                    if(edges.get(j).getUno() == nodes.get(i)){
+                                        edges.get(j).setX1(nodes.get(i).getX());
+                                        edges.get(j).setY1(nodes.get(i).getY());
 
+                                    }if(edges.get(j).getDos() == nodes.get(i)){
+                                        edges.get(j).setX2(nodes.get(i).getX());
+                                        edges.get(j).setY2(nodes.get(i).getY());
+                                    }
+                                }
+                            }
+                            else if(!edgesD.isEmpty()){
+                                for(int j = 0;j<edgesD.size();j++){
+                                    if(edgesD.get(j).getUno() == nodes.get(i)){
+                                        edgesD.get(j).setX1(nodes.get(i).getX());
+                                        edgesD.get(j).setY1(nodes.get(i).getY());
+
+                                    }if(edgesD.get(j).getDos() == nodes.get(i)){
+                                        edgesD.get(j).setX2(nodes.get(i).getX());
+                                        edgesD.get(j).setY2(nodes.get(i).getY());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                     break;
 
                 case MotionEvent.ACTION_UP:
@@ -331,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void createNode(float x, float y) {
             int id = nodes.size();
-            Nodo a = new Nodo(x,y,id+1,"#CD5C5D");
+            Nodo a = new Nodo(x,y,id+1,"#E53935");
             nodes.add(a);
         }
 
@@ -339,6 +406,7 @@ public class MainActivity extends AppCompatActivity {
             Arista a = null;
             Nodo _uno = null;
             Nodo _dos = null;
+            selected = 0;
 
             for(int i = 0;i < nodes.size(); i++){
                 if( x1 == nodes.get(i).getX() && y1 == nodes.get(i).getY()){
@@ -355,6 +423,11 @@ public class MainActivity extends AppCompatActivity {
             }else if(dirigido == true){
                 a = new Arista(x1,y1,x2,y2,true,_uno,_dos);
                 edgesD.add(a);
+            }
+
+            for(int i = 0;i<nodes.size();i++){
+                nodes.get(i).setSelected(false);
+                nodes.get(i).setColor("#E53935");
             }
         }
 
