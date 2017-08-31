@@ -1,5 +1,7 @@
 package com.example.fabricio.graffs;
 
+import android.util.Log;
+
 /**
  * Created by Fabricio on 20/8/17.
  */
@@ -13,7 +15,7 @@ public class Arista {
     private int holgura,peso;
 
 
-    public Arista(float x1, float y1, float x2, float y2, boolean dir, Nodo uno, Nodo dos) {
+    public Arista(float x1, float y1, float x2, float y2, boolean dir, Nodo uno, Nodo dos,int peso) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -21,19 +23,19 @@ public class Arista {
         this.dir = dir;
         this.uno = uno;
         this.dos = dos;
+        this.peso = peso;
     }
-    public double pendiente()
-    {
-        double m=0;
-        if(x1>x2 && y1>y2)
-        {
-            m=(x1-x2)/(y1-y2);
+    public double pendiente() {
+        double m=(y2-y1)/(x2-x1);
+        double angulo = Math.toDegrees(Math.atan(m));
+
+        if((x1>x2 && y1>y2) || (x1>x2 && y2>y1)) {
+            angulo = angulo+270;
+        }else if((x2>x1 && y2>y1)|| (x2>x1 && y1>y2)) {
+            angulo = angulo+90;
         }
-        else if(x2>x1 && y2>y1)
-        {
-            m=(x2-x1)/(y2-y1);
-        }
-        return m;
+
+        return angulo;
     }
     public int getHolgura() {
         return holgura;
