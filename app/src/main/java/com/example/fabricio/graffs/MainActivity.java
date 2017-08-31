@@ -560,10 +560,14 @@ public class MainActivity extends AppCompatActivity {
                                     {
                                             s2 = c.getId();
                                             s = c.getFeed(); //Para hacer la resta empezamos con lo que sea que esta en el campo de Feed del nodo 2
-                                         if(c.getX() == x1 && c.getY() == y1) {  //Aqui va a guardar el nodo 1 (su id( comparando las coordenadas
-                                             s1 = c.getId();
-                                             s = s - c.getStart(); //Luego de agarrar el feed del nodo 2 se resta a eso el Start del nodo 1
-                                         }
+                                        for(Nodo c2:nodes) { //Ahora con la convergencia asiganara el siguiente nodo no marcado para ir por otro camino no analizado
+                                            if(!c2.getSelected()) {
+                                                if (c2.getX() == x1 && c2.getY() == y1) {  //Aqui va a guardar el nodo 1 (su id( comparando las coordenadas
+                                                    s1 = c.getId();
+                                                    s = s - c.getStart(); //Luego de agarrar el feed del nodo 2 se resta a eso el Start del nodo 1
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                                 nodes.get(s1).setSelected(true); //Ya trabajamos los 2 nodos entonces los marcamos
