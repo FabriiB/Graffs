@@ -547,7 +547,7 @@ public class MainActivity extends AppCompatActivity {
                                 y1 = b.getY1();
                                 for (Nodo c : nodes) //Busca ahora en los nodos los correspondientes con la arista para aplicar el restar
                                 {
-                                    //if (!c.getSelected()) { //Reutilizando el atributo de selected a manera de flag, si ya fue seleccionado el nodo no se lo toma en cuenta
+                                    if (!c.getSelected()) { //Reutilizando el atributo de selected a manera de flag, si ya fue seleccionado el nodo no se lo toma en cuenta
                                         if (c.getX() == x2 && c.getY() == y2) { //Aqui va a guardar ahora el nodo 2 (su id) comparando las coordenadas
                                             s2 = c.getId();
                                             s = c.getFeed(); //Para hacer la resta empezamos con lo que sea que esta en el campo de Feed del nodo 2
@@ -555,7 +555,16 @@ public class MainActivity extends AppCompatActivity {
                                             s1 = c.getId();
                                             s = s - c.getStart(); //Luego de agarrar el feed del nodo 2 se resta a eso el Start del nodo 1
                                         }
-                                    //}
+                                    }
+                                    else if(c.getSelected() && c.getX() == x2 && c.getY() == y2) //Aqui encuentra un punto de convergencia si es que el nodo ya esta seleccionado
+                                    {
+                                            s2 = c.getId();
+                                            s = c.getFeed(); //Para hacer la resta empezamos con lo que sea que esta en el campo de Feed del nodo 2
+                                         if(c.getX() == x1 && c.getY() == y1) {  //Aqui va a guardar el nodo 1 (su id( comparando las coordenadas
+                                             s1 = c.getId();
+                                             s = s - c.getStart(); //Luego de agarrar el feed del nodo 2 se resta a eso el Start del nodo 1
+                                         }
+                                    }
                                 }
                                 nodes.get(s1).setSelected(true); //Ya trabajamos los 2 nodos entonces los marcamos
                                 nodes.get(s2).setSelected(true);
