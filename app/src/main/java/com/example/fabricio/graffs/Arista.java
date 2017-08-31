@@ -12,7 +12,7 @@ public class Arista {
     private boolean dir = false;
     private Nodo uno;
     private Nodo dos;
-    private int holgura,peso;
+    private int holgura=100000,peso;
 
 
     public Arista(float x1, float y1, float x2, float y2, boolean dir, Nodo uno, Nodo dos,int peso) {
