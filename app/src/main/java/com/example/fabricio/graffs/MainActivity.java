@@ -95,9 +95,8 @@ public class MainActivity extends AppCompatActivity {
         selected = 0;
 
         dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.custom_dialog);
-
         dialogo = (TextView) dialog.findViewById(R.id.dialog);
 
 
@@ -192,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
         }else if(!edgesD.isEmpty()){
             dialogo.setText("Rango de Salida: "+rango+"\nRango de Entrada: "+rangoS);
         }
-
         dialog.show();
     }
 
@@ -341,9 +339,9 @@ public class MainActivity extends AppCompatActivity {
             int princol=0;
             for(int j=0;j<nodes.size();j++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
             {
+                flag=0;
                 for(int i=0;i< nodes.size();i++)
                 {
-                    flag=0;
                     if(matrix[i][j]!=0);
                     {
                         flag = 1;
