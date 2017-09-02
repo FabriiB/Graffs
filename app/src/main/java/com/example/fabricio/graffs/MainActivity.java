@@ -375,26 +375,19 @@ public class MainActivity extends AppCompatActivity {
                     finales.add(i);
                 }
             }
-            for(int aux:principios)
-            {
-                s=nodes.get(aux).getStart();
-                for(int i=0;i<nodes.size();i++)
-                {
-                    s=nodes.get(aux).getStart();
-                    for(int j=0;j<nodes.size();j++)
-                    {
-                        if(matrix[i][j]!=0)
-                        {
-                            s=s+matrix[i][j];
-                            nodes.get(j).setStart(s);
-                        }
-                    }
-                }
-            }
-            boolean fin=false;
+           for(int i=0;i<nodes.size();i++)
+           {
+               for(int j=0;j<nodes.size();j++)
+               {
+                   if(matrix[i][j]!=0) {
+                       s = nodes.get(i).getStart() + matrix[i][j];
+                       nodes.get(j).setStart(s);
+                   }
+               }
+           }
             for(Nodo ver:nodes)
             {
-                Log.e("Starts",""+ver.getStart()+"\nNodo "+ver.getId());
+                Log.e("Starts",""+ver.getStart()+" Nodo "+ver.getId()+"\n");
             }
         }
         catch(Exception e)
