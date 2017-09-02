@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     EditText editDialog;
     View MyView;
     Dialog dialog;
-    Dialog dialog2;
     private String result = "";
 
 
@@ -98,9 +97,6 @@ public class MainActivity extends AppCompatActivity {
         dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
         dialog.setContentView(R.layout.custom_dialog);
-
-        dialog2 = new Dialog(this);
-        dialog2.requestWindowFeature(Window.FEATURE_ACTION_BAR);
 
         dialogo = (TextView) dialog.findViewById(R.id.dialog);
 
@@ -343,16 +339,21 @@ public class MainActivity extends AppCompatActivity {
             int s=0;
             int flag=0;
             int princol=0;
-            for(int i=0;i<nodes.size();i++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
+            for(int j=0;j<nodes.size();j++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
             {
-                flag=0;
-                if(matrix[i][princol]!=0);
-                flag=1;
+                for(int i=0;i< nodes.size();i++)
+                {
+                    flag=0;
+                    if(matrix[i][j]!=0);
+                    {
+                        flag = 1;
+                        break;
+                    }
+                }
                 if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
                 {
-                    principios.add(i+1);
+                    principios.add(j);
                 }
-                princol++;
             }
             for(int aux:principios)
             {
@@ -363,11 +364,11 @@ public class MainActivity extends AppCompatActivity {
                     {
                         if(ver.getId()==aux)
                         {
-                            s=ver.getStart();
+                            s=s+ver.getStart();
                         }
                         else if(ver.getId()==j)
                         {
-                            s=s+matrix[aux-1][j];
+                            s=s+matrix[aux][j];
                             ver.setStart(s);
                         }
                     }
@@ -381,10 +382,6 @@ public class MainActivity extends AppCompatActivity {
         catch(Exception e)
         {
             Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        for(Nodo ax:nodes)
-        {
-            Log.e("In: ",""+ax.getStart());
         }
     }
     public void recorridovuelta()
@@ -554,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void createNode(float x, float y) {
             int id = nodes.size();
-            Nodo a = new Nodo(x,y,id+1,"#E53935");
+            Nodo a = new Nodo(x,y,id,"#E53935",0,0);
             nodes.add(a);
         }
 
