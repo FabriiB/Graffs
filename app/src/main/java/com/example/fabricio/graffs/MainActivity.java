@@ -147,20 +147,26 @@ public class MainActivity extends AppCompatActivity {
         String aux="Matriz Adyacente\n";
         matrix();
 
+        int s=0;
+        int sc[]=new int[nodes.size()];
         for(int i=0;i<nodes.size();i++) {
-            aux = aux+"\t\t"+nodes.get(i).getId();
+            aux = aux+"\n\n\t\t";
+            s=0;
+            for(int j=0;j<nodes.size();j++)
+            {
+                s=s+matrix[i][j];
+                sc[i]=sc[i]+matrix[j][i];
+                aux = aux + matrix[i][j] +"\t\t";
+            }
+            aux = aux +" = "+s;
         }
         aux=aux+"\n";
         for(int i=0;i<nodes.size();i++){
-            aux = aux+"\t\t||";
+            aux = aux+"\t\t\t||";
         }
+        aux=aux+"\n";
         for(int i=0;i<nodes.size();i++) {
-            aux = aux+"\n\n\t\t";
-            for(int j=0;j<nodes.size();j++)
-            {
-                aux = aux + matrix[i][j] +"\t\t";
-            }
-            aux = aux +" = "+nodes.get(i).getId();
+            aux = aux+"\t\t"+sc[i];
         }
 
         dialogo.setTextSize(30);
@@ -202,10 +208,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonNoDirigido(View view){
-        showChangeLangDialog();
-        edgesD.clear();
-        dirigido = false;
-//        showChangeLangDialog();
+        //       showChangeLangDialog();
 //        edgesD.clear();
 //        dirigido = false;
         recorridoida();
@@ -254,18 +257,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void matrix(){
-        matrix = new int [nodes.size()+1][nodes.size()+1];
+        matrix = new int [nodes.size()][nodes.size()];
         for(int g=0;g < nodes.size();g++) {
             for(int h=0;h < nodes.size();h++) {
                 for(int k=0;k < edges.size();k++) {
-                    if(g == edges.get(k).getUno().getId()-1 && h == edges.get(k).getDos().getId()-1){
+                    if(g == edges.get(k).getUno().getId() && h == edges.get(k).getDos().getId()){
                         matrix[g][h]+= 1;
                         matrix[h][g]+= 1;
                     }
                 }
 
                 for(int k=0;k < edgesD.size();k++) {
-                    if(g == edgesD.get(k).getUno().getId()-1 && h == edgesD.get(k).getDos().getId()-1){
+                    if(g == edgesD.get(k).getUno().getId() && h == edgesD.get(k).getDos().getId()){
                         matrix[g][h] = edgesD.get(k).getPeso();
                     }
                 }
@@ -334,7 +337,9 @@ public class MainActivity extends AppCompatActivity {
     {
         try {
             ArrayList<Integer> principios=new ArrayList<Integer>();
+            ArrayList<Integer> finales=new ArrayList<Integer>();
             int s=0;
+            String yas="";
             int flag=0;
             int princol=0;
             for(int j=0;j<nodes.size();j++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
@@ -342,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                 flag=0;
                 for(int i=0;i< nodes.size();i++)
                 {
-                    if(matrix[i][j]!=0);
+                    if(matrix[i][j]!=0)
                     {
                         flag = 1;
                         break;
@@ -350,31 +355,46 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
                 {
+                    Log.e("Principio",""+j);
                     principios.add(j);
+                }
+            }
+            Log.e("Ver1:",yas);
+            for(int i=0;i<nodes.size();i++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
+            {
+                flag = 0;
+                for (int j = 0; j < nodes.size(); j++) {
+                    if (matrix[i][j] != 0) {
+                        flag = 1;
+                        break;
+                    }
+                }
+                if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
+                {
+                    Log.e("Final", "" + i);
+                    finales.add(i);
                 }
             }
             for(int aux:principios)
             {
-                s=0;
-                for(int j=0;j<nodes.size();j++)
+                s=nodes.get(aux).getStart();
+                for(int i=0;i<nodes.size();i++)
                 {
-                    for(Nodo ver:nodes)
+                    s=nodes.get(aux).getStart();
+                    for(int j=0;j<nodes.size();j++)
                     {
-                        if(ver.getId()==aux)
+                        if(matrix[i][j]!=0)
                         {
-                            s=s+ver.getStart();
-                        }
-                        else if(ver.getId()==j)
-                        {
-                            s=s+matrix[aux][j];
-                            ver.setStart(s);
+                            s=s+matrix[i][j];
+                            nodes.get(j).setStart(s);
                         }
                     }
                 }
             }
+            boolean fin=false;
             for(Nodo ver:nodes)
             {
-                Log.e("Starts",""+ver.getStart());
+                Log.e("Starts",""+ver.getStart()+"\nNodo "+ver.getId());
             }
         }
         catch(Exception e)
