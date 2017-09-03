@@ -418,6 +418,10 @@ public class MainActivity extends AppCompatActivity {
                         String cad="";
                         cad=cad+i+j;
                         int comp=Integer.parseInt(cad);
+                        if(s<0)
+                        {
+                            s=0;
+                        }
                         for(Arista aux:edgesD)
                         {
                             if(aux.getId()==comp)
