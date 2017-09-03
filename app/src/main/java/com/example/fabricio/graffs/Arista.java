@@ -1,7 +1,5 @@
 package com.example.fabricio.graffs;
 
-import android.util.Log;
-
 /**
  * Created by Fabricio on 20/8/17.
  */
@@ -13,9 +11,17 @@ public class Arista {
     private Nodo uno;
     private Nodo dos;
     private int holgura=100000,peso;
+    private int id;
 
+    public int getId() {
+        return id;
+    }
 
-    public Arista(float x1, float y1, float x2, float y2, boolean dir, Nodo uno, Nodo dos,int peso) {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Arista(float x1, float y1, float x2, float y2, boolean dir, Nodo uno, Nodo dos, int peso, int id) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -24,6 +30,7 @@ public class Arista {
         this.uno = uno;
         this.dos = dos;
         this.peso = peso;
+        this.id=id;
     }
     public double pendiente() {
         double m=(y2-y1)/(x2-x1);

@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
 //        dirigido = false;
         recorridoida();
         recorridovuelta();
+        holguras();
     }
 
     public void buttonCreate(View view){
@@ -402,7 +403,44 @@ public class MainActivity extends AppCompatActivity {
         {
             Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-
+    }
+    public void holguras()
+    {
+        try {
+            int s=0;
+            int flag=0;
+            for(int i=nodes.size()-1;i>=0;i--)
+            {
+                for(int j=nodes.size()-1;j>=0;j--)
+                {
+                    if(matrix[i][j]!=0) {
+                        s = nodes.get(j).getFeed() - nodes.get(i).getStart() - matrix[i][j];
+                        String cad="";
+                        cad=cad+i+j;
+                        int comp=Integer.parseInt(cad);
+                        for(Arista aux:edgesD)
+                        {
+                            if(aux.getId()==comp)
+                            {
+                                aux.setHolgura(s);
+                            }
+                        }
+                    }
+                }
+            }
+            for(Arista aux:edgesD)
+            {
+                Log.e("Holguras: ",""+aux.getHolgura());
+            }
+            for(Nodo ver:nodes)
+            {
+                Log.e("Feeds",""+ver.getFeed()+" Nodo "+ver.getId()+"\n");
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
     // <---  END BOTONES  --->
 
@@ -583,10 +621,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(dirigido == false){
-                a = new Arista(x1,y1,x2,y2,false,_uno,_dos,resultado);
+                a = new Arista(x1,y1,x2,y2,false,_uno,_dos,resultado,0);
                 edges.add(a);
             }else if(dirigido == true){
-                a = new Arista(x1,y1,x2,y2,true,_uno,_dos,resultado);
+                String cadena="";
+                cadena=cadena+_uno.getId()+_dos.getId();
+                Log.e("IdArista: ",""+cadena);
+                int id=Integer.parseInt(cadena);
+                a = new Arista(x1,y1,x2,y2,true,_uno,_dos,resultado,id);
                 edgesD.add(a);
             }
 
