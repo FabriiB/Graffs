@@ -336,52 +336,16 @@ public class MainActivity extends AppCompatActivity {
     public void recorridoida()
     {
         try {
-            ArrayList<Integer> principios=new ArrayList<Integer>();
-            ArrayList<Integer> finales=new ArrayList<Integer>();
             int s=0;
-            String yas="";
-            int flag=0;
-            int princol=0;
-            for(int j=0;j<nodes.size();j++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
-            {
-                flag=0;
-                for(int i=0;i< nodes.size();i++)
-                {
-                    if(matrix[i][j]!=0)
-                    {
-                        flag = 1;
-                        break;
-                    }
-                }
-                if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
-                {
-                    Log.e("Principio",""+j);
-                    principios.add(j);
-                }
-            }
-            Log.e("Ver1:",yas);
-            for(int i=0;i<nodes.size();i++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
-            {
-                flag = 0;
-                for (int j = 0; j < nodes.size(); j++) {
-                    if (matrix[i][j] != 0) {
-                        flag = 1;
-                        break;
-                    }
-                }
-                if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
-                {
-                    Log.e("Final", "" + i);
-                    finales.add(i);
-                }
-            }
            for(int i=0;i<nodes.size();i++)
            {
                for(int j=0;j<nodes.size();j++)
                {
                    if(matrix[i][j]!=0) {
                        s = nodes.get(i).getStart() + matrix[i][j];
-                       nodes.get(j).setStart(s);
+                       if(s>nodes.get(j).getStart()) {
+                           nodes.get(j).setStart(s);
+                       }
                    }
                }
            }
@@ -398,10 +362,45 @@ public class MainActivity extends AppCompatActivity {
     public void recorridovuelta()
     {
        try {
+           ArrayList<Integer> finales=new ArrayList<Integer>();
+           int s=0;
+           int flag=0;
+           for(int i=0;i<nodes.size();i++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
+           {
+               flag = 0;
+               for (int j = 0; j < nodes.size(); j++) {
+                   if (matrix[i][j] != 0) {
+                       flag = 1;
+                       break;
+                   }
+               }
+               if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
+               {
+                   Log.e("Final", "" + i);
+                   finales.add(i);
+                   nodes.get(i).setFeed(nodes.get(i).getStart());
+               }
+           }
+           for(int i=nodes.size()-1;i>=0;i--)
+           {
+               for(int j=nodes.size()-1;j>=0;j--)
+               {
+                   if(matrix[i][j]!=0) {
+                       s = nodes.get(j).getFeed() - matrix[i][j];
+                       if(s<nodes.get(i).getFeed()) {
+                           nodes.get(i).setFeed(s);
+                       }
+                   }
+               }
+           }
+           for(Nodo ver:nodes)
+           {
+               Log.e("Feeds",""+ver.getFeed()+" Nodo "+ver.getId()+"\n");
+           }
        }
         catch(Exception e)
         {
-            Toast.makeText(MainActivity.this, "Surgió un error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -562,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void createNode(float x, float y) {
             int id = nodes.size();
-            Nodo a = new Nodo(x,y,id,"#E53935",0,0);
+            Nodo a = new Nodo(x,y,id,"#E53935",0,999999);
             nodes.add(a);
         }
 
