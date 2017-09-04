@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         recorridoida();
         recorridovuelta();
         holguras();
+        Toast.makeText(this, "Haga click en la pantalla", Toast.LENGTH_SHORT).show();
     }
 
     public void buttonCreate(View view){
@@ -496,7 +497,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             for(int i = 0; i<edgesD.size();i++){
-                paint.setColor(Color.BLACK);
+                if(edgesD.get(i).getHolgura()==0)
+                    paint.setColor(Color.YELLOW);
+                else
+                    paint.setColor(Color.BLACK);
                 canvas.drawLine(edgesD.get(i).getX1(),edgesD.get(i).getY1(),edgesD.get(i).getX2(),edgesD.get(i).getY2(),paint);
                 drawTriangle(canvas,paint,(edgesD.get(i).getX2()+edgesD.get(i).getX1())/2,(edgesD.get(i).getY2()+edgesD.get(i).getY1())/2,edgesD.get(i));
                 paint.setColor(Color.RED);
@@ -506,10 +510,15 @@ public class MainActivity extends AppCompatActivity {
 
 
             for(int i = 0; i < nodes.size();i++){
+                int su=0;
                 paint.setColor(Color.parseColor(nodes.get(i).getColor()));
                 canvas.drawCircle(nodes.get(i).getX(),nodes.get(i).getY(),radio,paint);
                 paint.setColor(Color.WHITE);
-                canvas.drawText(String.valueOf(nodes.get(i).getId()),nodes.get(i).getX()-15,nodes.get(i).getY()+15,paint);
+                if(nodes.get(i).getFeed()==999999)
+                    su=0;
+                else
+                    su=nodes.get(i).getFeed();
+                canvas.drawText(String.valueOf(nodes.get(i).getStart()+"|"+su),nodes.get(i).getX()-70,nodes.get(i).getY()+20,paint);
                 paint.setColor(Color.WHITE);
             }
         }
