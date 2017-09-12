@@ -24,11 +24,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-
+public class AssignActivity extends AppCompatActivity {
     // ARRAYS DE NODOS Y ARISTA ( SUJETO A CAMBIO )
-
     ArrayList<Nodo> nodes = new ArrayList<Nodo>();
+    ArrayList<Nodo> nodesOr = new ArrayList<Nodo>();
+    ArrayList<Nodo> nodesTar = new ArrayList<Nodo>();
     ArrayList<Arista> edges = new ArrayList<Arista>();
     ArrayList<Arista> edgesD = new ArrayList<Arista>();
 
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Matriz de adyacencia
     int [][] matrix;
-    int [][] matrixass;
 
     int selected;
 
@@ -56,11 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
     // Boleanos para saber si un boton esa siendo usado o no
     public boolean  nodo,
-                    arista,
-                    crear,
-                    seleccionar,
-                    dirigido,
-                    ndirigido;
+            arista,
+            crear,
+            seleccionar,
+            dirigido,
+            ndirigido,
+            nodoTar;
 
 
     // PROCESOS DE INICIALIZACION DEL PROYECTO
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_assign);
 
         //  AGREGAMOS EL CUSTOM VIEW AL LINEARLAYOUT CREADO EN EL XML
         parent = (LinearLayout)findViewById(R.id.parent);
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         seleccionar = false;
         dirigido = false;
         ndirigido = true;
+        nodoTar = false;
 
         selected = 0;
 
@@ -113,16 +114,111 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // <---  FUNCIONES DE LOS BOTONES  --->
+    // <---  FUNCIONES DE LOS BOTONES  ---
+    public void buttonMax(View view)
+    {
+        try
+        {
+            int alfa[][]=new int[nodesOr.size()][nodesTar.size()];
+            int maycols[]=new int[nodesTar.size()];
+            int alfamenass[][]=new int[nodesOr.size()][nodesTar.size()];
+            for(int i=0;i<nodesTar.size();i++)
+            {
+                maycols[i]=(-1);
+            }
+            for(int i=0;i<nodesOr.size();i++) {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    if(maycols[i]<matrix[j][i])
+                    {
+                        maycols[i]=matrix[j][i];
+                    }
+                }
+            }
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    alfa[j][i]=maycols[i];
+                }
+            }
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    alfamenass[i][j]=matrix[i][j]-alfa[i][j];
+                }
+            }
+            int beta[][]=new int[nodesOr.size()][nodesTar.size()];
+            int mayfilas[]=new int[nodesOr.size()];
+
+            for(int i=0;i<nodesOr.size();i++) {
+                mayfilas[i]=alfamenass[i][0];
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    if(mayfilas[i]<alfamenass[i][j])
+                    {
+                        mayfilas[i]=alfamenass[i][j];
+                    }
+                }
+            }
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    beta[i][j]=mayfilas[i];
+                }
+            }
+            int todomenbeta[][] = new int[nodesOr.size()][nodesTar.size()];
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    todomenbeta[i][j]=alfamenass[i][j]-beta[i][j];
+                }
+            }
+            String aux="";
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                aux=aux+"\n";
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    aux=aux+todomenbeta[i][j]+"\t";
+                }
+            }
+            Log.e("TodoMenBeta",""+aux);
+            aux="";
+
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
     public void buttonNode(View view) {
         if(!nodo) {
             nodo = true;
+            nodoTar=false;
             arista = false;
             changeColor();
         }
 
         else {
             nodo = false;
+            changeColor();
+        }
+    }
+
+    public void buttonTarget(View view) {
+        if(!nodoTar) {
+            nodoTar = true;
+            nodo=false;
+            arista = false;
+            changeColor();
+        }
+
+        else {
+            nodoTar = false;
             changeColor();
         }
     }
@@ -131,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         if(!arista) {
             arista = true;
             nodo = false;
+            nodoTar = false;
             changeColor();
         }
         else {
@@ -139,13 +236,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void buttonClear(View view) {
+    public void start(View view) {
         Intent intent = new Intent(this, MainActivity.class);
-        this.startActivity(intent);
-        finish();
-    }
-    public void assignstart(View view) {
-        Intent intent = new Intent(this, AssignActivity.class);
         this.startActivity(intent);
         finish();
     }
@@ -154,26 +246,12 @@ public class MainActivity extends AppCompatActivity {
         String aux="Matriz Adyacente\n";
         matrix();
 
-        int s=0;
-        int sc[]=new int[nodes.size()];
-        for(int i=0;i<nodes.size();i++) {
+        for(int i=0;i<nodesOr.size();i++) {
             aux = aux+"\n\n\t\t";
-            s=0;
-            for(int j=0;j<nodes.size();j++)
+            for(int j=0;j<nodesTar.size();j++)
             {
-                s=s+matrix[i][j];
-                sc[i]=sc[i]+matrix[j][i];
                 aux = aux + matrix[i][j] +"\t\t";
             }
-            aux = aux +" = "+s;
-        }
-        aux=aux+"\n";
-        for(int i=0;i<nodes.size();i++){
-            aux = aux+"\t\t\t||";
-        }
-        aux=aux+"\n";
-        for(int i=0;i<nodes.size();i++) {
-            aux = aux+"\t\t"+sc[i];
         }
 
         dialogo.setTextSize(30);
@@ -181,31 +259,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void buttonRange(View view){
-        matrix();
-        int s=0,r=0,rango=0,rangoS=0;
-        for(int i=0;i < nodes.size();i++) {
-            s=0;
-            r=0;
-            for(int j=0;j < nodes.size();j++) {
-                if(matrix[i][j]>0) {
-                    s++;
-                }
-                if(matrix[j][i]>0) {
-                    r++;
-                }
-            }
-            if(s >rango){rango=s;}
-            if(r >rangoS){rangoS=r;}
-        }
-        dialogo.setTextSize(30);
-        if(!edges.isEmpty()){
-            dialogo.setText("Rango: "+rango);
-        }else if(!edgesD.isEmpty()){
-            dialogo.setText("Rango de Salida: "+rango+"\nRango de Entrada: "+rangoS);
-        }
-        dialog.show();
-    }
 
     public void buttonDirigido(View view){
         showChangeLangDialog();
@@ -214,15 +267,6 @@ public class MainActivity extends AppCompatActivity {
         MyView.invalidate();
     }
 
-    public void buttonNoDirigido(View view){
-        //       showChangeLangDialog();
-//        edgesD.clear();
-//        dirigido = false;
-        recorridoida();
-        recorridovuelta();
-        holguras();
-        Toast.makeText(this, "Haga click en la pantalla", Toast.LENGTH_SHORT).show();
-    }
 
     public void buttonCreate(View view){
         crear = true;
@@ -266,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void matrix(){
-        matrix = new int [nodes.size()][nodes.size()];
+        matrix = new int [nodesOr.size()][nodesTar.size()];
         for(int g=0;g < nodes.size();g++) {
             for(int h=0;h < nodes.size();h++) {
                 for(int k=0;k < edges.size();k++) {
@@ -342,118 +386,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void recorridoida()
-    {
-        try {
-            int s=0;
-           for(int i=0;i<nodes.size();i++)
-           {
-               for(int j=0;j<nodes.size();j++)
-               {
-                   if(matrix[i][j]!=0) {
-                       s = nodes.get(i).getStart() + matrix[i][j];
-                       if(s>nodes.get(j).getStart()) {
-                           nodes.get(j).setStart(s);
-                       }
-                   }
-               }
-           }
-            for(Nodo ver:nodes)
-            {
-                Log.e("Starts",""+ver.getStart()+" Nodo "+ver.getId()+"\n");
-            }
-        }
-        catch(Exception e)
-        {
-            Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-    public void recorridovuelta()
-    {
-       try {
-           ArrayList<Integer> finales=new ArrayList<Integer>();
-           int s=0;
-           int flag=0;
-           for(int i=0;i<nodes.size();i++) //Ahora analiza la matriz para encontrar principios, los principios son los que tienen columna donde tod es 0
-           {
-               flag = 0;
-               for (int j = 0; j < nodes.size(); j++) {
-                   if (matrix[i][j] != 0) {
-                       flag = 1;
-                       break;
-                   }
-               }
-               if (flag == 0) //Si encuentra una columna con 0 encuentra un nodo de principio y recupera ese nodo (EL id para luego comparar)
-               {
-                   Log.e("Final", "" + i);
-                   finales.add(i);
-                   nodes.get(i).setFeed(nodes.get(i).getStart());
-               }
-           }
-           for(int i=nodes.size()-1;i>=0;i--)
-           {
-               for(int j=nodes.size()-1;j>=0;j--)
-               {
-                   if(matrix[i][j]!=0) {
-                       s = nodes.get(j).getFeed() - matrix[i][j];
-                       if(s<nodes.get(i).getFeed()) {
-                           nodes.get(i).setFeed(s);
-                       }
-                   }
-               }
-           }
-           for(Nodo ver:nodes)
-           {
-               Log.e("Feeds",""+ver.getFeed()+" Nodo "+ver.getId()+"\n");
-           }
-       }
-        catch(Exception e)
-        {
-            Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-    public void holguras()
-    {
-        try {
-            int s=0;
-            int flag=0;
-            for(int i=nodes.size()-1;i>=0;i--)
-            {
-                for(int j=nodes.size()-1;j>=0;j--)
-                {
-                    if(matrix[i][j]!=0) {
-                        s = nodes.get(j).getFeed() - nodes.get(i).getStart() - matrix[i][j];
-                        String cad="";
-                        cad=cad+i+j;
-                        int comp=Integer.parseInt(cad);
-                        if(s<0)
-                        {
-                            s=0;
-                        }
-                        for(Arista aux:edgesD)
-                        {
-                            if(aux.getId()==comp)
-                            {
-                                aux.setHolgura(s);
-                            }
-                        }
-                    }
-                }
-            }
-            for(Arista aux:edgesD)
-            {
-                Log.e("Holguras: ",""+aux.getHolgura());
-            }
-            for(Nodo ver:nodes)
-            {
-                Log.e("Feeds",""+ver.getFeed()+" Nodo "+ver.getId()+"\n");
-            }
-        }
-        catch(Exception e)
-        {
-            Toast.makeText(MainActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
+
     // <---  END BOTONES  --->
 
 
@@ -536,7 +469,8 @@ public class MainActivity extends AppCompatActivity {
             _y = e.getY();
             switch (e.getAction()){
                 case MotionEvent.ACTION_DOWN:
-                    if(nodo && crear){ createNode(_x,_y); invalidate(); }
+                    if(nodo && crear){ createNode(_x,_y,true); invalidate(); }
+                    else if(nodoTar && crear){ createNode(_x,_y,false); invalidate();}
                     else if(arista && ndirigido){
                         for(int i = 0; i < nodes.size();i++) {
                             double cenx = _x - nodes.get(i).getX();
@@ -572,41 +506,41 @@ public class MainActivity extends AppCompatActivity {
 
                 case MotionEvent.ACTION_MOVE:
                     if(nodo && seleccionar){
-                    for(int i = 0; i < nodes.size();i++) {
-                        double cenx = _x - nodes.get(i).getX();
-                        double ceny = _y - nodes.get(i).getY();
-                        float distancia = (float) Math.sqrt(cenx * cenx + ceny * ceny);
-                        if (distancia <= 100) {
-                            circulo = i;
-                            nodes.get(i).setX(_x);
-                            nodes.get(i).setY(_y);
-                            if(!edges.isEmpty()){
-                                for(int j = 0;j<edges.size();j++){
-                                    if(edges.get(j).getUno() == nodes.get(i)){
-                                        edges.get(j).setX1(nodes.get(i).getX());
-                                        edges.get(j).setY1(nodes.get(i).getY());
+                        for(int i = 0; i < nodes.size();i++) {
+                            double cenx = _x - nodes.get(i).getX();
+                            double ceny = _y - nodes.get(i).getY();
+                            float distancia = (float) Math.sqrt(cenx * cenx + ceny * ceny);
+                            if (distancia <= 100) {
+                                circulo = i;
+                                nodes.get(i).setX(_x);
+                                nodes.get(i).setY(_y);
+                                if(!edges.isEmpty()){
+                                    for(int j = 0;j<edges.size();j++){
+                                        if(edges.get(j).getUno() == nodes.get(i)){
+                                            edges.get(j).setX1(nodes.get(i).getX());
+                                            edges.get(j).setY1(nodes.get(i).getY());
 
-                                    }if(edges.get(j).getDos() == nodes.get(i)){
-                                        edges.get(j).setX2(nodes.get(i).getX());
-                                        edges.get(j).setY2(nodes.get(i).getY());
+                                        }if(edges.get(j).getDos() == nodes.get(i)){
+                                            edges.get(j).setX2(nodes.get(i).getX());
+                                            edges.get(j).setY2(nodes.get(i).getY());
+                                        }
                                     }
                                 }
-                            }
-                            else if(!edgesD.isEmpty()){
-                                for(int j = 0;j<edgesD.size();j++){
-                                    if(edgesD.get(j).getUno() == nodes.get(i)){
-                                        edgesD.get(j).setX1(nodes.get(i).getX());
-                                        edgesD.get(j).setY1(nodes.get(i).getY());
+                                else if(!edgesD.isEmpty()){
+                                    for(int j = 0;j<edgesD.size();j++){
+                                        if(edgesD.get(j).getUno() == nodes.get(i)){
+                                            edgesD.get(j).setX1(nodes.get(i).getX());
+                                            edgesD.get(j).setY1(nodes.get(i).getY());
 
-                                    }if(edgesD.get(j).getDos() == nodes.get(i)){
-                                        edgesD.get(j).setX2(nodes.get(i).getX());
-                                        edgesD.get(j).setY2(nodes.get(i).getY());
+                                        }if(edgesD.get(j).getDos() == nodes.get(i)){
+                                            edgesD.get(j).setX2(nodes.get(i).getX());
+                                            edgesD.get(j).setY2(nodes.get(i).getY());
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
                     break;
 
                 case MotionEvent.ACTION_UP:
@@ -617,10 +551,18 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        public void createNode(float x, float y) {
-            int id = nodes.size();
+        public void createNode(float x, float y,boolean choose) {
+            int id=0;
+            if(choose)
+                id = nodesOr.size();
+            else
+                id=nodesTar.size();
             Nodo a = new Nodo(x,y,id,"#E53935",0,999999);
             nodes.add(a);
+            if(choose)
+                nodesOr.add(a);
+            else
+                nodesTar.add(a);
         }
 
         public void createAristaND(float x1,float x2,float y1, float y2) {

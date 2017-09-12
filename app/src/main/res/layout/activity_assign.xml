@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context="com.example.fabricio.graffs.MainActivity">
-
+    tools:context="com.example.fabricio.graffs.AssignActivity">
 
     <LinearLayout
         android:id="@+id/parent"
@@ -71,8 +70,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#0288D1"
-                android:onClick="buttonNoDirigido"
-                android:text="Johnson"
+                android:onClick="buttonTarget"
+                android:text="Target"
                 android:textColor="#FFFFFF"
                 android:visibility="invisible" />
         </LinearLayout>
@@ -95,7 +94,7 @@
             android:layout_weight="1"
             android:background="#0288D1"
             android:onClick="buttonNode"
-            android:text="Node"
+            android:text="Origin"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -113,28 +112,28 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#0288D1"
-            android:onClick="buttonClear"
-            android:text="Clear"
-            android:textColor="#FFFFFF" />
-
-        <Button
-            android:id="@+id/bt4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#0288D1"
             android:onClick="buttonMatrix"
             android:text="Matrix"
             android:textColor="#FFFFFF" />
 
         <Button
-            android:id="@+id/bt5"
+            android:id="@+id/btmax"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#0288D1"
-            android:onClick="buttonRange"
-            android:text="Range"
+            android:onClick="buttonMax"
+            android:text="max"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#0288D1"
+            android:onClick="buttonMin"
+            android:text="min"
             android:textColor="#FFFFFF" />
     </LinearLayout>
     <LinearLayout
@@ -146,8 +145,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#0288D1"
-            android:onClick="assignstart"
-            android:text="Asignación"
+            android:onClick="start"
+            android:text="Inicio"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 </LinearLayout>
