@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+//OCHINCHIN DAISUKI DATTEBAYO
+
 public class AssignActivity extends AppCompatActivity {
     // ARRAYS DE NODOS Y ARISTA ( SUJETO A CAMBIO )
     ArrayList<Nodo> nodes = new ArrayList<Nodo>();
@@ -115,10 +117,15 @@ public class AssignActivity extends AppCompatActivity {
     }
 
     // <---  FUNCIONES DE LOS BOTONES  ---
+
+    // <--- Chingadera maximizacion ---
     public void buttonMax(View view)
     {
-        try
-        {
+        ArrayList<Integer> colstachar=new ArrayList<Integer>();
+        ArrayList<Integer> filstachar=new ArrayList<Integer>();
+
+        ArrayList<Integer> solfil=new ArrayList<Integer>();
+        ArrayList<Integer> solcol=new ArrayList<Integer>();
             int alfa[][]=new int[nodesOr.size()][nodesTar.size()];
             int maycols[]=new int[nodesTar.size()];
             int alfamenass[][]=new int[nodesOr.size()][nodesTar.size()];
@@ -126,8 +133,8 @@ public class AssignActivity extends AppCompatActivity {
             {
                 maycols[i]=(-1);
             }
-            for(int i=0;i<nodesOr.size();i++) {
-                for(int j=0;j<nodesTar.size();j++)
+            for(int i=0;i<nodesTar.size();i++) {
+                for(int j=0;j<nodesOr.size();j++)
                 {
                     if(maycols[i]<matrix[j][i])
                     {
@@ -135,9 +142,9 @@ public class AssignActivity extends AppCompatActivity {
                     }
                 }
             }
-            for(int i=0;i<nodesOr.size();i++)
+            for(int i=0;i<nodesTar.size();i++)
             {
-                for(int j=0;j<nodesTar.size();j++)
+                for(int j=0;j<nodesOr.size();j++)
                 {
                     alfa[j][i]=maycols[i];
                 }
@@ -188,13 +195,893 @@ public class AssignActivity extends AppCompatActivity {
             }
             Log.e("TodoMenBeta",""+aux);
             aux="";
+            int betacompletada[][] = new int[0][];
+            boolean completada=false;
+            int orden=0;
+            if(nodesTar.size()>nodesOr.size())
+            {
+                Log.e("Caso: ","Columnas mayor que filas");
+                betacompletada=new int[nodesTar.size()][nodesTar.size()];
+                for(int i=0;i<nodesOr.size();i++)
+                {
+                    for(int j=0;j<nodesTar.size();j++)
+                    {
+                        betacompletada[i][j]=todomenbeta[i][j];
+                    }
+                }
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    betacompletada[nodesTar.size()-1][j]=0;
+                }
+                completada=true;
+                orden=nodesTar.size();
+            }
+            else if(nodesTar.size()<nodesOr.size())
+            {
+                Log.e("Caso: ","Filas mayor que columnas");
+                betacompletada=new int[nodesOr.size()][nodesOr.size()];
+                for(int i=0;i<nodesOr.size();i++)
+                {
+                    for(int j=0;j<nodesTar.size();j++)
+                    {
+                        betacompletada[i][j]=todomenbeta[i][j];
+                    }
+                }
+                for(int j=0;j<nodesOr.size();j++)
+                {
+                    betacompletada[j][nodesOr.size()-1]=0;
+                }
+                completada=true;
+                orden=nodesOr.size();
+            }
+            else
+                orden=nodesOr.size();
+            boolean borrar=false;
+            int checksolu=0;
+            int sumafinal=0;
+            if(completada)
+            {
+                Log.e("Caso: ","Se completo la wea");
+                for(int i=0;i<orden;i++)
+                {
+                    borrar=false;
+                    for(int j=0;j<orden;j++)
+                    {
+                        borrar=false;
+                        Log.e("Elemento",""+betacompletada[i][j]);
+                        for(int k=0;k<solcol.size();k++)
+                        {
+                            if(solcol.get(k)==j)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        for(int k=0;k<solfil.size();k++)
+                        {
+                            if(solfil.get(k)==i)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        if(betacompletada[i][j]==0 && !borrar) {
+                            Log.e("Posible Sol ",""+i+"-"+j);
+                            solfil.add(i);
+                            solcol.add(j);
+                            checksolu++;
+                            break;
+                        }
+                    }
+                }
+                if(nodesOr.size()==checksolu)
+                {
+                    Log.e("Decision","Todo cool brother");
+                    String printsol="";
+                    String unir="";
+                    int compararidarista=0;
+                    for(int i=0;i<orden;i++)
+                    {
+                        unir="";
+                        unir=unir+solfil.get(i)+solcol.get(i);
+                        Log.e("Sol",""+unir+"\n");
+                        compararidarista=Integer.parseInt(unir);
+                        for(Arista yeahboi:edgesD)
+                        {
+                            if(yeahboi.getId()==compararidarista)
+                            {
+                                yeahboi.setHolgura(0);
+                                sumafinal+=yeahboi.getPeso();
+                            }
+                        }
+                    }
+                    Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Log.e("Decision","Por las huevas tiene que seguir");
+                    checksolu=0;
+                    solfil.clear();
+                    solcol.clear();
+                    checkceros(colstachar,filstachar,betacompletada,nodesOr.size());
+                    String mensaje="";
+                    for(int i=0;i<colstachar.size();i++)
+                    {
+                        mensaje=mensaje+colstachar.get(i)+"\n";
+                    }
+                    Log.e("Cols Tachadas",""+mensaje);
+                    mensaje="";
+                    for(int i=0;i<filstachar.size();i++)
+                    {
+                        mensaje=mensaje+filstachar.get(i)+"\n";
+                    }
+                    Log.e("Filas Tachadas",""+mensaje);
+                    int valorescogido=escogervalormax(colstachar,filstachar,betacompletada,nodesOr.size());
+                    Log.e("Valor escogido",""+valorescogido);
+                    restarvalor(colstachar,filstachar,betacompletada,nodesOr.size(),valorescogido);
+                    mensaje="";
+                    for(int i=0;i<nodesOr.size();i++)
+                    {
+                        mensaje=mensaje+"\n";
+                        for(int j=0;j<nodesTar.size();j++)
+                        {
+                            mensaje=mensaje+betacompletada[i][j]+"\t";
+                        }
+                    }
+                    Log.e("Cambio con valor:",""+mensaje);
+                    for(int i=0;i<orden;i++)
+                    {
+                        borrar=false;
+                        for(int j=0;j<orden;j++)
+                        {
+                            borrar=false;
+                            Log.e("Elemento",""+betacompletada[i][j]);
+                            for(int k=0;k<solcol.size();k++)
+                            {
+                                if(solcol.get(k)==j)
+                                {
+                                    borrar=true;
+                                    break;
+                                }
+                            }
+                            for(int k=0;k<solfil.size();k++)
+                            {
+                                if(solfil.get(k)==i)
+                                {
+                                    borrar=true;
+                                    break;
+                                }
+                            }
+                            if(betacompletada[i][j]==0 && !borrar) {
+                                Log.e("Posible Sol ",""+i+"-"+j);
+                                solfil.add(i);
+                                solcol.add(j);
+                                checksolu++;
+                                break;
+                            }
+                        }
 
+                    }
+                    String printsol="";
+                    String unir="";
+                    int compararidarista=0;
+                    int s=0;
+                    for(int i=0;i<solcol.size();i++)
+                    {
+                        unir="";
+                        unir=unir+solfil.get(i)+solcol.get(i);
+                        Log.e("Sol",""+unir+"\n");
+                        compararidarista=Integer.parseInt(unir);
+                        for(Arista yeahboi:edgesD)
+                        {
+                            if(yeahboi.getId()==compararidarista)
+                            {
+                                yeahboi.setHolgura(0);
+                                s+=yeahboi.getPeso();
+                            }
+                        }
+                    }
+                    Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+                }
+            }
+            else
+            {
+                checksolu=0;
+                Log.e("Caso: ","Usando la original");
+                for(int i=0;i<orden;i++)
+                {
+                    borrar=false;
+                    for(int j=0;j<orden;j++)
+                    {
+                        borrar=false;
+                        Log.e("Elemento",""+todomenbeta[i][j]);
+                        for(int k=0;k<solcol.size();k++)
+                        {
+                            if(solcol.get(k)==j)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        for(int k=0;k<solfil.size();k++)
+                        {
+                            if(solfil.get(k)==i)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        if(todomenbeta[i][j]==0 && !borrar) {
+                            Log.e("Posible Sol ",""+i+"-"+j);
+                            solfil.add(i);
+                            solcol.add(j);
+                            checksolu++;
+                            break;
+                        }
+                    }
+
+                }
+                if(nodesOr.size()==checksolu)
+                {
+                    Log.e("Decision","Todo Cool Brother");
+                    String printsol="";
+                    String unir="";
+                    int compararidarista=0;
+                    for(int i=0;i<solcol.size();i++)
+                    {
+                        unir="";
+                        unir=unir+solfil.get(i)+solcol.get(i);
+                        Log.e("Sol",""+unir+"\n");
+                        compararidarista=Integer.parseInt(unir);
+                        for(Arista yeahboi:edgesD)
+                        {
+                            if(yeahboi.getId()==compararidarista)
+                            {
+                                sumafinal+=yeahboi.getPeso();
+                                yeahboi.setHolgura(0);
+                            }
+                        }
+                    }
+                    Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Log.e("Decision","Por las huevas tiene que seguir");
+                    checksolu=0;
+                    solfil.clear();
+                    solcol.clear();
+                    checkceros(colstachar,filstachar,todomenbeta,nodesOr.size());
+                    String mensaje="";
+                    for(int i=0;i<colstachar.size();i++)
+                    {
+                        mensaje=mensaje+colstachar.get(i)+"\n";
+                    }
+                    Log.e("Cols Tachadas",""+mensaje);
+                    mensaje="";
+                    for(int i=0;i<filstachar.size();i++)
+                    {
+                        mensaje=mensaje+filstachar.get(i)+"\n";
+                    }
+                    Log.e("Filas Tachadas",""+mensaje);
+                    int valorescogido=escogervalormax(colstachar,filstachar,todomenbeta,nodesOr.size());
+                    Log.e("Valor escogido",""+valorescogido);
+                    restarvalor(colstachar,filstachar,todomenbeta,nodesOr.size(),valorescogido);
+                    mensaje="";
+                    for(int i=0;i<nodesOr.size();i++)
+                    {
+                        mensaje=mensaje+"\n";
+                        for(int j=0;j<nodesTar.size();j++)
+                        {
+                            mensaje=mensaje+todomenbeta[i][j]+"\t";
+                        }
+                    }
+                    Log.e("Cambio con valor:",""+mensaje);
+                    for(int i=0;i<orden;i++)
+                    {
+                        borrar=false;
+                        for(int j=0;j<orden;j++)
+                        {
+                            borrar=false;
+                            Log.e("Elemento",""+todomenbeta[i][j]);
+                            for(int k=0;k<solcol.size();k++)
+                            {
+                                if(solcol.get(k)==j)
+                                {
+                                    borrar=true;
+                                    break;
+                                }
+                            }
+                            for(int k=0;k<solfil.size();k++)
+                            {
+                                if(solfil.get(k)==i)
+                                {
+                                    borrar=true;
+                                    break;
+                                }
+                            }
+                            if(todomenbeta[i][j]==0 && !borrar) {
+                                Log.e("Posible Sol ",""+i+"-"+j);
+                                solfil.add(i);
+                                solcol.add(j);
+                                checksolu++;
+                                break;
+                            }
+                        }
+
+                    }
+                    String printsol="";
+                    String unir="";
+                    int compararidarista=0;
+                    for(int i=0;i<solcol.size();i++)
+                    {
+                        unir="";
+                        unir=unir+solfil.get(i)+solcol.get(i);
+                        Log.e("Sol",""+unir+"\n");
+                        compararidarista=Integer.parseInt(unir);
+                        for(Arista yeahboi:edgesD)
+                        {
+                            if(yeahboi.getId()==compararidarista)
+                            {
+                                sumafinal+=yeahboi.getPeso();
+                                yeahboi.setHolgura(0);
+                            }
+                        }
+                    }
+                    Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+    }
+    public void checkceros(ArrayList<Integer> colstachar,ArrayList<Integer> filstachar,int beta[][],int orden)
+    {
+        int contnullact=0;
+
+        int contmayfila=0;
+        int contmaycol=0;
+
+        int filamayor=0;
+        int colmayor=0;
+        boolean yano=false;
+        try
+        {
+            for(int i=0;i<orden;i++)
+            {
+                contnullact=0;
+                for(int j=0;j<orden;j++)
+                {
+                    if(beta[i][j]==0)
+                    {
+                        contnullact++;
+                    }
+                }
+                if(contnullact>contmayfila)
+                {
+                    contmayfila=contnullact;
+                    filamayor=i;
+                }
+            }
+            contnullact=0;
+            for(int i=0;i<orden;i++)
+            {
+                contnullact=0;
+                for(int j=0;j<orden;j++)
+                {
+                    if(beta[j][i]==0)
+                    {
+                        contnullact++;
+                    }
+                }
+                if(contnullact>contmaycol)
+                {
+                    contmaycol=contnullact;
+                    colmayor=i;
+                }
+            }
+            colstachar.add(colmayor);
+            filstachar.add(filamayor);
         }
         catch(Exception e)
         {
             Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+    public int escogervalormax(ArrayList<Integer> colstachar,ArrayList<Integer> filstachar,int beta[][],int orden)
+    {
+        boolean tachado=false;
+        int valormay=0;
+        valormay=beta[0][0];
+        for(int i=0;i<orden;i++)
+        {
+            tachado=false;
+            for(int j=0;j<orden;j++)
+            {
+                tachado=false;
+                if(filstachar.get(0)==i || colstachar.get(0)==j)
+                {
+                    tachado = true;
+                }
+                if(!tachado)
+                {
+                    if(valormay<beta[i][j])
+                    {
+                        valormay=beta[i][j];
+                    }
+                }
+            }
+        }
+        return valormay;
+    }
+    public void restarvalor(ArrayList<Integer> colstachar,ArrayList<Integer> filstachar,int beta[][],int orden,int valorescogido)
+    {
+        boolean tachadofila=false;
+        boolean tachadocolumn=false;
+        for(int i=0;i<orden;i++)
+        {
+            tachadofila=false;
+            tachadocolumn=false;
+            for(int j=0;j<orden;j++)
+            {
+                if(colstachar.get(0)==j && filstachar.get(0)==i)
+                {
+                    beta[i][j]+=(valorescogido);
+                }
+                else if(colstachar.get(0)!=j && filstachar.get(0)!=i)
+                {
+                    beta[i][j]+=((valorescogido)*(-1));
+                }
+            }
+        }
+    }
+
+    // <--- Fin maximizacion ---
+
+    // <--- Jodida Minimizacion ---
+
+    public void buttonMin(View view)
+    {
+        ArrayList<Integer> colstachar=new ArrayList<Integer>();
+        ArrayList<Integer> filstachar=new ArrayList<Integer>();
+
+        ArrayList<Integer> solfil=new ArrayList<Integer>();
+        ArrayList<Integer> solcol=new ArrayList<Integer>();
+        int alfa[][]=new int[nodesOr.size()][nodesTar.size()];
+        int mencols[]=new int[nodesTar.size()];
+        int alfamenass[][]=new int[nodesOr.size()][nodesTar.size()];
+        for(int i=0;i<nodesTar.size();i++)
+        {
+            mencols[i]=9999999;
+        }
+        for(int i=0;i<nodesTar.size();i++) {
+            for(int j=0;j<nodesOr.size();j++)
+            {
+                if(mencols[i]<matrix[j][i])
+                {
+                    mencols[i]=matrix[j][i];
+                }
+            }
+        }
+        for(int i=0;i<nodesTar.size();i++)
+        {
+            for(int j=0;j<nodesOr.size();j++)
+            {
+                alfa[j][i]=mencols[i];
+            }
+        }
+        for(int i=0;i<nodesOr.size();i++)
+        {
+            for(int j=0;j<nodesTar.size();j++)
+            {
+                alfamenass[i][j]=matrix[i][j]-alfa[i][j];
+            }
+        }
+        int beta[][]=new int[nodesOr.size()][nodesTar.size()];
+        int menfilas[]=new int[nodesOr.size()];
+
+        for(int i=0;i<nodesOr.size();i++) {
+            menfilas[i]=alfamenass[i][0];
+            for(int j=0;j<nodesTar.size();j++)
+            {
+                if(menfilas[i]>alfamenass[i][j])
+                {
+                    menfilas[i]=alfamenass[i][j];
+                }
+            }
+        }
+        for(int i=0;i<nodesOr.size();i++)
+        {
+            for(int j=0;j<nodesTar.size();j++)
+            {
+                beta[i][j]=menfilas[i];
+            }
+        }
+        int todomenbeta[][] = new int[nodesOr.size()][nodesTar.size()];
+        for(int i=0;i<nodesOr.size();i++)
+        {
+            for(int j=0;j<nodesTar.size();j++)
+            {
+                todomenbeta[i][j]=alfamenass[i][j]-beta[i][j];
+            }
+        }
+        String aux="";
+        for(int i=0;i<nodesOr.size();i++)
+        {
+            aux=aux+"\n";
+            for(int j=0;j<nodesTar.size();j++)
+            {
+                aux=aux+todomenbeta[i][j]+"\t";
+            }
+        }
+        Log.e("TodoMenBeta",""+aux);
+        aux="";
+        int betacompletada[][] = new int[0][];
+        boolean completada=false;
+        int orden=0;
+        if(nodesTar.size()>nodesOr.size())
+        {
+            Log.e("Caso: ","Columnas mayor que filas");
+            betacompletada=new int[nodesTar.size()][nodesTar.size()];
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    betacompletada[i][j]=todomenbeta[i][j];
+                }
+            }
+            for(int j=0;j<nodesTar.size();j++)
+            {
+                betacompletada[nodesTar.size()-1][j]=0;
+            }
+            completada=true;
+            orden=nodesTar.size();
+        }
+        else if(nodesTar.size()<nodesOr.size())
+        {
+            Log.e("Caso: ","Filas mayor que columnas");
+            betacompletada=new int[nodesOr.size()][nodesOr.size()];
+            for(int i=0;i<nodesOr.size();i++)
+            {
+                for(int j=0;j<nodesTar.size();j++)
+                {
+                    betacompletada[i][j]=todomenbeta[i][j];
+                }
+            }
+            for(int j=0;j<nodesOr.size();j++)
+            {
+                betacompletada[j][nodesOr.size()-1]=0;
+            }
+            completada=true;
+            orden=nodesOr.size();
+        }
+        else
+            orden=nodesOr.size();
+        boolean borrar=false;
+        int checksolu=0;
+        int sumafinal=0;
+        if(completada)
+        {
+            Log.e("Caso: ","Se completo la wea");
+            for(int i=0;i<orden;i++)
+            {
+                borrar=false;
+                for(int j=0;j<orden;j++)
+                {
+                    borrar=false;
+                    Log.e("Elemento",""+betacompletada[i][j]);
+                    for(int k=0;k<solcol.size();k++)
+                    {
+                        if(solcol.get(k)==j)
+                        {
+                            borrar=true;
+                            break;
+                        }
+                    }
+                    for(int k=0;k<solfil.size();k++)
+                    {
+                        if(solfil.get(k)==i)
+                        {
+                            borrar=true;
+                            break;
+                        }
+                    }
+                    if(betacompletada[i][j]==0 && !borrar) {
+                        Log.e("Posible Sol ",""+i+"-"+j);
+                        solfil.add(i);
+                        solcol.add(j);
+                        checksolu++;
+                        break;
+                    }
+                }
+            }
+            if(nodesOr.size()==checksolu)
+            {
+                Log.e("Decision","Todo cool brother");
+                String printsol="";
+                String unir="";
+                int compararidarista=0;
+                for(int i=0;i<orden;i++)
+                {
+                    unir="";
+                    unir=unir+solfil.get(i)+solcol.get(i);
+                    Log.e("Sol",""+unir+"\n");
+                    compararidarista=Integer.parseInt(unir);
+                    for(Arista yeahboi:edgesD)
+                    {
+                        if(yeahboi.getId()==compararidarista)
+                        {
+                            yeahboi.setHolgura(0);
+                            sumafinal+=yeahboi.getPeso();
+                        }
+                    }
+                }
+                Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Log.e("Decision","Por las huevas tiene que seguir");
+                checksolu=0;
+                solfil.clear();
+                solcol.clear();
+                checkceros(colstachar,filstachar,betacompletada,nodesOr.size());
+                String mensaje="";
+                for(int i=0;i<colstachar.size();i++)
+                {
+                    mensaje=mensaje+colstachar.get(i)+"\n";
+                }
+                Log.e("Cols Tachadas",""+mensaje);
+                mensaje="";
+                for(int i=0;i<filstachar.size();i++)
+                {
+                    mensaje=mensaje+filstachar.get(i)+"\n";
+                }
+                Log.e("Filas Tachadas",""+mensaje);
+                int valorescogido=escogervalormin(colstachar,filstachar,betacompletada,nodesOr.size());
+                Log.e("Valor escogido",""+valorescogido);
+                restarvalor(colstachar,filstachar,betacompletada,nodesOr.size(),valorescogido);
+                mensaje="";
+                for(int i=0;i<nodesOr.size();i++)
+                {
+                    mensaje=mensaje+"\n";
+                    for(int j=0;j<nodesTar.size();j++)
+                    {
+                        mensaje=mensaje+betacompletada[i][j]+"\t";
+                    }
+                }
+                Log.e("Cambio con valor:",""+mensaje);
+                for(int i=0;i<orden;i++)
+                {
+                    borrar=false;
+                    for(int j=0;j<orden;j++)
+                    {
+                        borrar=false;
+                        Log.e("Elemento",""+betacompletada[i][j]);
+                        for(int k=0;k<solcol.size();k++)
+                        {
+                            if(solcol.get(k)==j)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        for(int k=0;k<solfil.size();k++)
+                        {
+                            if(solfil.get(k)==i)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        if(betacompletada[i][j]==0 && !borrar) {
+                            Log.e("Posible Sol ",""+i+"-"+j);
+                            solfil.add(i);
+                            solcol.add(j);
+                            checksolu++;
+                            break;
+                        }
+                    }
+
+                }
+                String printsol="";
+                String unir="";
+                int compararidarista=0;
+                int s=0;
+                for(int i=0;i<solcol.size();i++)
+                {
+                    unir="";
+                    unir=unir+solfil.get(i)+solcol.get(i);
+                    Log.e("Sol",""+unir+"\n");
+                    compararidarista=Integer.parseInt(unir);
+                    for(Arista yeahboi:edgesD)
+                    {
+                        if(yeahboi.getId()==compararidarista)
+                        {
+                            yeahboi.setHolgura(0);
+                            s+=yeahboi.getPeso();
+                        }
+                    }
+                }
+                Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+            }
+        }
+        else
+        {
+            checksolu=0;
+            Log.e("Caso: ","Usando la original");
+            for(int i=0;i<orden;i++)
+            {
+                borrar=false;
+                for(int j=0;j<orden;j++)
+                {
+                    borrar=false;
+                    Log.e("Elemento",""+todomenbeta[i][j]);
+                    for(int k=0;k<solcol.size();k++)
+                    {
+                        if(solcol.get(k)==j)
+                        {
+                            borrar=true;
+                            break;
+                        }
+                    }
+                    for(int k=0;k<solfil.size();k++)
+                    {
+                        if(solfil.get(k)==i)
+                        {
+                            borrar=true;
+                            break;
+                        }
+                    }
+                    if(todomenbeta[i][j]==0 && !borrar) {
+                        Log.e("Posible Sol ",""+i+"-"+j);
+                        solfil.add(i);
+                        solcol.add(j);
+                        checksolu++;
+                        break;
+                    }
+                }
+
+            }
+            if(nodesOr.size()==checksolu)
+            {
+                Log.e("Decision","Todo Cool Brother");
+                String printsol="";
+                String unir="";
+                int compararidarista=0;
+                for(int i=0;i<solcol.size();i++)
+                {
+                    unir="";
+                    unir=unir+solfil.get(i)+solcol.get(i);
+                    Log.e("Sol",""+unir+"\n");
+                    compararidarista=Integer.parseInt(unir);
+                    for(Arista yeahboi:edgesD)
+                    {
+                        if(yeahboi.getId()==compararidarista)
+                        {
+                            sumafinal+=yeahboi.getPeso();
+                            yeahboi.setHolgura(0);
+                        }
+                    }
+                }
+                Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Log.e("Decision","Por las huevas tiene que seguir");
+                checksolu=0;
+                solfil.clear();
+                solcol.clear();
+                checkceros(colstachar,filstachar,todomenbeta,nodesOr.size());
+                String mensaje="";
+                for(int i=0;i<colstachar.size();i++)
+                {
+                    mensaje=mensaje+colstachar.get(i)+"\n";
+                }
+                Log.e("Cols Tachadas",""+mensaje);
+                mensaje="";
+                for(int i=0;i<filstachar.size();i++)
+                {
+                    mensaje=mensaje+filstachar.get(i)+"\n";
+                }
+                Log.e("Filas Tachadas",""+mensaje);
+                int valorescogido=escogervalormin(colstachar,filstachar,todomenbeta,nodesOr.size());
+                Log.e("Valor escogido",""+valorescogido);
+                restarvalor(colstachar,filstachar,todomenbeta,nodesOr.size(),valorescogido);
+                mensaje="";
+                for(int i=0;i<nodesOr.size();i++)
+                {
+                    mensaje=mensaje+"\n";
+                    for(int j=0;j<nodesTar.size();j++)
+                    {
+                        mensaje=mensaje+todomenbeta[i][j]+"\t";
+                    }
+                }
+                Log.e("Cambio con valor:",""+mensaje);
+                for(int i=0;i<orden;i++)
+                {
+                    borrar=false;
+                    for(int j=0;j<orden;j++)
+                    {
+                        borrar=false;
+                        Log.e("Elemento",""+todomenbeta[i][j]);
+                        for(int k=0;k<solcol.size();k++)
+                        {
+                            if(solcol.get(k)==j)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        for(int k=0;k<solfil.size();k++)
+                        {
+                            if(solfil.get(k)==i)
+                            {
+                                borrar=true;
+                                break;
+                            }
+                        }
+                        if(todomenbeta[i][j]==0 && !borrar) {
+                            Log.e("Posible Sol ",""+i+"-"+j);
+                            solfil.add(i);
+                            solcol.add(j);
+                            checksolu++;
+                            break;
+                        }
+                    }
+
+                }
+                String printsol="";
+                String unir="";
+                int compararidarista=0;
+                for(int i=0;i<solcol.size();i++)
+                {
+                    unir="";
+                    unir=unir+solfil.get(i)+solcol.get(i);
+                    Log.e("Sol",""+unir+"\n");
+                    compararidarista=Integer.parseInt(unir);
+                    for(Arista yeahboi:edgesD)
+                    {
+                        if(yeahboi.getId()==compararidarista)
+                        {
+                            sumafinal+=yeahboi.getPeso();
+                            yeahboi.setHolgura(0);
+                        }
+                    }
+                }
+                Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+    public int escogervalormin(ArrayList<Integer> colstachar,ArrayList<Integer> filstachar,int beta[][],int orden)
+    {
+        boolean tachado=false;
+        int valormin=0;
+        valormin=beta[0][0];
+        for(int i=0;i<orden;i++)
+        {
+            tachado=false;
+            for(int j=0;j<orden;j++)
+            {
+                tachado=false;
+                if(filstachar.get(0)==i || colstachar.get(0)==j)
+                {
+                    tachado = true;
+                }
+                if(!tachado)
+                {
+                    if(valormin>beta[i][j])
+                    {
+                        valormin=beta[i][j];
+                    }
+                }
+            }
+        }
+        return valormin;
+    }
+
+
+
+
+    // <---- Fin minimizacion
+
     public void buttonNode(View view) {
         if(!nodo) {
             nodo = true;
