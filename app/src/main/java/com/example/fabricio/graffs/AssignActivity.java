@@ -121,6 +121,10 @@ public class AssignActivity extends AppCompatActivity {
     // <--- Chingadera maximizacion ---
     public void buttonMax(View view)
     {
+        for(Arista myboi:edgesD)
+        {
+            myboi.setHolgura(999999);
+        }
         ArrayList<Integer> colstachar=new ArrayList<Integer>();
         ArrayList<Integer> filstachar=new ArrayList<Integer>();
 
@@ -297,92 +301,83 @@ public class AssignActivity extends AppCompatActivity {
                     }
                     Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
                 }
-                else
-                {
-                    Log.e("Decision","Por las huevas tiene que seguir");
-                    checksolu=0;
-                    solfil.clear();
-                    solcol.clear();
-                    checkceros(colstachar,filstachar,betacompletada,nodesOr.size());
-                    String mensaje="";
-                    for(int i=0;i<colstachar.size();i++)
-                    {
-                        mensaje=mensaje+colstachar.get(i)+"\n";
-                    }
-                    Log.e("Cols Tachadas",""+mensaje);
-                    mensaje="";
-                    for(int i=0;i<filstachar.size();i++)
-                    {
-                        mensaje=mensaje+filstachar.get(i)+"\n";
-                    }
-                    Log.e("Filas Tachadas",""+mensaje);
-                    int valorescogido=escogervalormax(colstachar,filstachar,betacompletada,nodesOr.size());
-                    Log.e("Valor escogido",""+valorescogido);
-                    restarvalor(colstachar,filstachar,betacompletada,nodesOr.size(),valorescogido);
-                    mensaje="";
-                    for(int i=0;i<nodesOr.size();i++)
-                    {
-                        mensaje=mensaje+"\n";
-                        for(int j=0;j<nodesTar.size();j++)
-                        {
-                            mensaje=mensaje+betacompletada[i][j]+"\t";
+                else {
+                    while (true) {
+                        Log.e("Decision", "Por las huevas tiene que seguir");
+                        checksolu = 0;
+                        solfil.clear();
+                        solcol.clear();
+                        checkceros(colstachar, filstachar, betacompletada, nodesOr.size());
+                        String mensaje = "";
+                        for (int i = 0; i < colstachar.size(); i++) {
+                            mensaje = mensaje + colstachar.get(i) + "\n";
                         }
-                    }
-                    Log.e("Cambio con valor:",""+mensaje);
-                    for(int i=0;i<orden;i++)
-                    {
-                        borrar=false;
-                        for(int j=0;j<orden;j++)
-                        {
-                            borrar=false;
-                            Log.e("Elemento",""+betacompletada[i][j]);
-                            for(int k=0;k<solcol.size();k++)
-                            {
-                                if(solcol.get(k)==j)
-                                {
-                                    borrar=true;
+                        Log.e("Cols Tachadas", "" + mensaje);
+                        mensaje = "";
+                        for (int i = 0; i < filstachar.size(); i++) {
+                            mensaje = mensaje + filstachar.get(i) + "\n";
+                        }
+                        Log.e("Filas Tachadas", "" + mensaje);
+                        int valorescogido = escogervalormax(colstachar, filstachar, betacompletada, nodesOr.size());
+                        Log.e("Valor escogido", "" + valorescogido);
+                        restarvalor(colstachar, filstachar, betacompletada, nodesOr.size(), valorescogido);
+                        mensaje = "";
+                        for (int i = 0; i < nodesOr.size(); i++) {
+                            mensaje = mensaje + "\n";
+                            for (int j = 0; j < nodesTar.size(); j++) {
+                                mensaje = mensaje + betacompletada[i][j] + "\t";
+                            }
+                        }
+                        Log.e("Cambio con valor:", "" + mensaje);
+                        for (int i = 0; i < orden; i++) {
+                            borrar = false;
+                            for (int j = 0; j < orden; j++) {
+                                borrar = false;
+                                Log.e("Elemento", "" + betacompletada[i][j]);
+                                for (int k = 0; k < solcol.size(); k++) {
+                                    if (solcol.get(k) == j) {
+                                        borrar = true;
+                                        break;
+                                    }
+                                }
+                                for (int k = 0; k < solfil.size(); k++) {
+                                    if (solfil.get(k) == i) {
+                                        borrar = true;
+                                        break;
+                                    }
+                                }
+                                if (betacompletada[i][j] == 0 && !borrar) {
+                                    Log.e("Posible Sol ", "" + i + "-" + j);
+                                    solfil.add(i);
+                                    solcol.add(j);
+                                    checksolu++;
                                     break;
                                 }
                             }
-                            for(int k=0;k<solfil.size();k++)
-                            {
-                                if(solfil.get(k)==i)
-                                {
-                                    borrar=true;
-                                    break;
-                                }
-                            }
-                            if(betacompletada[i][j]==0 && !borrar) {
-                                Log.e("Posible Sol ",""+i+"-"+j);
-                                solfil.add(i);
-                                solcol.add(j);
-                                checksolu++;
-                                break;
-                            }
-                        }
 
+                        }
+                        if(nodesOr.size()==checksolu)
+                            break;
                     }
-                    String printsol="";
-                    String unir="";
-                    int compararidarista=0;
-                    int s=0;
-                    for(int i=0;i<solcol.size();i++)
-                    {
-                        unir="";
-                        unir=unir+solfil.get(i)+solcol.get(i);
-                        Log.e("Sol",""+unir+"\n");
-                        compararidarista=Integer.parseInt(unir);
-                        for(Arista yeahboi:edgesD)
-                        {
-                            if(yeahboi.getId()==compararidarista)
-                            {
-                                yeahboi.setHolgura(0);
-                                s+=yeahboi.getPeso();
+                        String printsol = "";
+                        String unir = "";
+                        int compararidarista = 0;
+                        int s = 0;
+                        for (int i = 0; i < solcol.size(); i++) {
+                            unir = "";
+                            unir = unir + solfil.get(i) + solcol.get(i);
+                            Log.e("Sol", "" + unir + "\n");
+                            compararidarista = Integer.parseInt(unir);
+                            for (Arista yeahboi : edgesD) {
+                                if (yeahboi.getId() == compararidarista) {
+                                    yeahboi.setHolgura(0);
+                                    s += yeahboi.getPeso();
+                                }
                             }
                         }
+                        Toast.makeText(this, "Click en la pantalla\nTotal: " + sumafinal, Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(this, "Click en la pantalla\nTotal: "+sumafinal, Toast.LENGTH_SHORT).show();
-                }
+
             }
             else
             {
@@ -446,68 +441,62 @@ public class AssignActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Log.e("Decision","Por las huevas tiene que seguir");
-                    checksolu=0;
-                    solfil.clear();
-                    solcol.clear();
-                    checkceros(colstachar,filstachar,todomenbeta,nodesOr.size());
-                    String mensaje="";
-                    for(int i=0;i<colstachar.size();i++)
-                    {
-                        mensaje=mensaje+colstachar.get(i)+"\n";
-                    }
-                    Log.e("Cols Tachadas",""+mensaje);
-                    mensaje="";
-                    for(int i=0;i<filstachar.size();i++)
-                    {
-                        mensaje=mensaje+filstachar.get(i)+"\n";
-                    }
-                    Log.e("Filas Tachadas",""+mensaje);
-                    int valorescogido=escogervalormax(colstachar,filstachar,todomenbeta,nodesOr.size());
-                    Log.e("Valor escogido",""+valorescogido);
-                    restarvalor(colstachar,filstachar,todomenbeta,nodesOr.size(),valorescogido);
-                    mensaje="";
-                    for(int i=0;i<nodesOr.size();i++)
-                    {
-                        mensaje=mensaje+"\n";
-                        for(int j=0;j<nodesTar.size();j++)
-                        {
-                            mensaje=mensaje+todomenbeta[i][j]+"\t";
+                    while(true) {
+                        Log.e("Decision", "Por las huevas tiene que seguir");
+                        checksolu = 0;
+                        solfil.clear();
+                        solcol.clear();
+                        checkceros(colstachar, filstachar, todomenbeta, nodesOr.size());
+                        String mensaje = "";
+                        for (int i = 0; i < colstachar.size(); i++) {
+                            mensaje = mensaje + colstachar.get(i) + "\n";
                         }
-                    }
-                    Log.e("Cambio con valor:",""+mensaje);
-                    for(int i=0;i<orden;i++)
-                    {
-                        borrar=false;
-                        for(int j=0;j<orden;j++)
-                        {
-                            borrar=false;
-                            Log.e("Elemento",""+todomenbeta[i][j]);
-                            for(int k=0;k<solcol.size();k++)
-                            {
-                                if(solcol.get(k)==j)
-                                {
-                                    borrar=true;
+                        Log.e("Cols Tachadas", "" + mensaje);
+                        mensaje = "";
+                        for (int i = 0; i < filstachar.size(); i++) {
+                            mensaje = mensaje + filstachar.get(i) + "\n";
+                        }
+                        Log.e("Filas Tachadas", "" + mensaje);
+                        int valorescogido = escogervalormax(colstachar, filstachar, todomenbeta, nodesOr.size());
+                        Log.e("Valor escogido", "" + valorescogido);
+                        restarvalor(colstachar, filstachar, todomenbeta, nodesOr.size(), valorescogido);
+                        mensaje = "";
+                        for (int i = 0; i < nodesOr.size(); i++) {
+                            mensaje = mensaje + "\n";
+                            for (int j = 0; j < nodesTar.size(); j++) {
+                                mensaje = mensaje + todomenbeta[i][j] + "\t";
+                            }
+                        }
+                        Log.e("Cambio con valor:", "" + mensaje);
+                        for (int i = 0; i < orden; i++) {
+                            borrar = false;
+                            for (int j = 0; j < orden; j++) {
+                                borrar = false;
+                                Log.e("Elemento", "" + todomenbeta[i][j]);
+                                for (int k = 0; k < solcol.size(); k++) {
+                                    if (solcol.get(k) == j) {
+                                        borrar = true;
+                                        break;
+                                    }
+                                }
+                                for (int k = 0; k < solfil.size(); k++) {
+                                    if (solfil.get(k) == i) {
+                                        borrar = true;
+                                        break;
+                                    }
+                                }
+                                if (todomenbeta[i][j] == 0 && !borrar) {
+                                    Log.e("Posible Sol ", "" + i + "-" + j);
+                                    solfil.add(i);
+                                    solcol.add(j);
+                                    checksolu++;
                                     break;
                                 }
                             }
-                            for(int k=0;k<solfil.size();k++)
-                            {
-                                if(solfil.get(k)==i)
-                                {
-                                    borrar=true;
-                                    break;
-                                }
-                            }
-                            if(todomenbeta[i][j]==0 && !borrar) {
-                                Log.e("Posible Sol ",""+i+"-"+j);
-                                solfil.add(i);
-                                solcol.add(j);
-                                checksolu++;
-                                break;
-                            }
-                        }
 
+                        }
+                        if(checksolu==nodesOr.size())
+                            break;
                     }
                     String printsol="";
                     String unir="";
@@ -639,6 +628,10 @@ public class AssignActivity extends AppCompatActivity {
 
     public void buttonMin(View view)
     {
+        for(Arista myboi:edgesD)
+        {
+            myboi.setHolgura(999999);
+        }
         ArrayList<Integer> colstachar=new ArrayList<Integer>();
         ArrayList<Integer> filstachar=new ArrayList<Integer>();
 
@@ -817,68 +810,61 @@ public class AssignActivity extends AppCompatActivity {
             }
             else
             {
-                Log.e("Decision","Por las huevas tiene que seguir");
-                checksolu=0;
-                solfil.clear();
-                solcol.clear();
-                checkceros(colstachar,filstachar,betacompletada,nodesOr.size());
-                String mensaje="";
-                for(int i=0;i<colstachar.size();i++)
-                {
-                    mensaje=mensaje+colstachar.get(i)+"\n";
-                }
-                Log.e("Cols Tachadas",""+mensaje);
-                mensaje="";
-                for(int i=0;i<filstachar.size();i++)
-                {
-                    mensaje=mensaje+filstachar.get(i)+"\n";
-                }
-                Log.e("Filas Tachadas",""+mensaje);
-                int valorescogido=escogervalormin(colstachar,filstachar,betacompletada,nodesOr.size());
-                Log.e("Valor escogido",""+valorescogido);
-                restarvalor(colstachar,filstachar,betacompletada,nodesOr.size(),valorescogido);
-                mensaje="";
-                for(int i=0;i<nodesOr.size();i++)
-                {
-                    mensaje=mensaje+"\n";
-                    for(int j=0;j<nodesTar.size();j++)
-                    {
-                        mensaje=mensaje+betacompletada[i][j]+"\t";
+                while(true) {
+                    Log.e("Decision", "Por las huevas tiene que seguir");
+                    checksolu = 0;
+                    solfil.clear();
+                    solcol.clear();
+                    checkceros(colstachar, filstachar, betacompletada, nodesOr.size());
+                    String mensaje = "";
+                    for (int i = 0; i < colstachar.size(); i++) {
+                        mensaje = mensaje + colstachar.get(i) + "\n";
                     }
-                }
-                Log.e("Cambio con valor:",""+mensaje);
-                for(int i=0;i<orden;i++)
-                {
-                    borrar=false;
-                    for(int j=0;j<orden;j++)
-                    {
-                        borrar=false;
-                        Log.e("Elemento",""+betacompletada[i][j]);
-                        for(int k=0;k<solcol.size();k++)
-                        {
-                            if(solcol.get(k)==j)
-                            {
-                                borrar=true;
+                    Log.e("Cols Tachadas", "" + mensaje);
+                    mensaje = "";
+                    for (int i = 0; i < filstachar.size(); i++) {
+                        mensaje = mensaje + filstachar.get(i) + "\n";
+                    }
+                    Log.e("Filas Tachadas", "" + mensaje);
+                    int valorescogido = escogervalormin(colstachar, filstachar, betacompletada, nodesOr.size());
+                    Log.e("Valor escogido", "" + valorescogido);
+                    restarvalor(colstachar, filstachar, betacompletada, nodesOr.size(), valorescogido);
+                    mensaje = "";
+                    for (int i = 0; i < nodesOr.size(); i++) {
+                        mensaje = mensaje + "\n";
+                        for (int j = 0; j < nodesTar.size(); j++) {
+                            mensaje = mensaje + betacompletada[i][j] + "\t";
+                        }
+                    }
+                    Log.e("Cambio con valor:", "" + mensaje);
+                    for (int i = 0; i < orden; i++) {
+                        borrar = false;
+                        for (int j = 0; j < orden; j++) {
+                            borrar = false;
+                            Log.e("Elemento", "" + betacompletada[i][j]);
+                            for (int k = 0; k < solcol.size(); k++) {
+                                if (solcol.get(k) == j) {
+                                    borrar = true;
+                                    break;
+                                }
+                            }
+                            for (int k = 0; k < solfil.size(); k++) {
+                                if (solfil.get(k) == i) {
+                                    borrar = true;
+                                    break;
+                                }
+                            }
+                            if (betacompletada[i][j] == 0 && !borrar) {
+                                Log.e("Posible Sol ", "" + i + "-" + j);
+                                solfil.add(i);
+                                solcol.add(j);
+                                checksolu++;
                                 break;
                             }
                         }
-                        for(int k=0;k<solfil.size();k++)
-                        {
-                            if(solfil.get(k)==i)
-                            {
-                                borrar=true;
-                                break;
-                            }
-                        }
-                        if(betacompletada[i][j]==0 && !borrar) {
-                            Log.e("Posible Sol ",""+i+"-"+j);
-                            solfil.add(i);
-                            solcol.add(j);
-                            checksolu++;
-                            break;
-                        }
                     }
-
+                    if(checksolu==nodesOr.size())
+                        break;
                 }
                 String printsol="";
                 String unir="";
@@ -964,6 +950,8 @@ public class AssignActivity extends AppCompatActivity {
             }
             else
             {
+                while(true)
+                {
                 Log.e("Decision","Por las huevas tiene que seguir");
                 checksolu=0;
                 solfil.clear();
@@ -994,38 +982,34 @@ public class AssignActivity extends AppCompatActivity {
                     }
                 }
                 Log.e("Cambio con valor:",""+mensaje);
-                for(int i=0;i<orden;i++)
-                {
-                    borrar=false;
-                    for(int j=0;j<orden;j++)
-                    {
-                        borrar=false;
-                        Log.e("Elemento",""+todomenbeta[i][j]);
-                        for(int k=0;k<solcol.size();k++)
-                        {
-                            if(solcol.get(k)==j)
-                            {
-                                borrar=true;
+                for(int i=0;i<orden;i++) {
+                    borrar = false;
+                    for (int j = 0; j < orden; j++) {
+                        borrar = false;
+                        Log.e("Elemento", "" + todomenbeta[i][j]);
+                        for (int k = 0; k < solcol.size(); k++) {
+                            if (solcol.get(k) == j) {
+                                borrar = true;
                                 break;
                             }
                         }
-                        for(int k=0;k<solfil.size();k++)
-                        {
-                            if(solfil.get(k)==i)
-                            {
-                                borrar=true;
+                        for (int k = 0; k < solfil.size(); k++) {
+                            if (solfil.get(k) == i) {
+                                borrar = true;
                                 break;
                             }
                         }
-                        if(todomenbeta[i][j]==0 && !borrar) {
-                            Log.e("Posible Sol ",""+i+"-"+j);
+                        if (todomenbeta[i][j] == 0 && !borrar) {
+                            Log.e("Posible Sol ", "" + i + "-" + j);
                             solfil.add(i);
                             solcol.add(j);
                             checksolu++;
                             break;
                         }
                     }
-
+                }
+                if(checksolu==nodesOr.size())
+                    break;
                 }
                 String printsol="";
                 String unir="";
